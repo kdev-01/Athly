@@ -9,8 +9,7 @@ class Settings(BaseSettings):
     DATABASE_PORT: int
 
     def DATABASE_URL(self):
-        return f"postgresql://{self.POSTGRES_USER}:{self.DATABASE_PORT}@localhost:{self.DATABASE_PORT}/{self.POSTGRES_DB}"
-    
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@localhost:{self.DATABASE_PORT}/{self.POSTGRES_DB}"
     class Config:
         env_file = '.env'
     
