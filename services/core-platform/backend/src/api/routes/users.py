@@ -1,12 +1,26 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi.security import OAuth2PasswordRequestForm
+from pydantic import EmailStr
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from typing import List, Optional, Dict, Any
+from typing import Annotated, Optional, List, Dict, Any
 from src.api.deps import get_db
 from src.models.user import User
 from src.schemas.user import UserBase, ReadUser
+from src.services.auth_service import AuthService
 
 router = APIRouter()
+
+@router.post('/token')
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
+    user = AuthService.authenticate_user(form_data, db)
+    if not user:
+        raise HTTPException(status_code=400, detail="Credenciales inválidas")
+    return user
+
+@router.get('/profile')
+def profile(current_user: Annotated[User, Depends(AuthService.decode_token)]):
+    return current_user
 
 @router.post('/', response_model=Dict[str, Any])
 def create_user(user_schema: UserBase, db: Session = Depends(get_db)):
@@ -23,9 +37,9 @@ def create_user(user_schema: UserBase, db: Session = Depends(get_db)):
 @router.get('/', response_model=List[ReadUser])
 def get_user(
     db: Session = Depends(get_db),
-    id: Optional[int] = None,
-    name: Optional[str] = None,
-    email: Optional[str] = None):
+    id: Optional[int] = Query(None, gt=0),
+    name: Optional[str] = Query(None, min_length=3, max_length=50),
+    email: EmailStr = None):
 
     query = db.query(User)
 
@@ -39,7 +53,7 @@ def get_user(
     return query.all()
 
 @router.put('/', response_model=Dict[str, Any])
-def update_user(id: int, user_schema: UserBase, db: Session = Depends(get_db)):
+def update_user(user_schema: UserBase, id: int, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.user_id == id).first()
 
     if not user:

@@ -12,7 +12,7 @@ class User(Base):
     email = Column(String(100), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
     phone = Column(String(15), nullable=False)
-    photo_url = Column(Text, index=True)
+    photo_url = Column(Text)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role_id = Column(Integer, ForeignKey('roles.role_id'), nullable=False)

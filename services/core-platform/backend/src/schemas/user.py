@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     password: str = Field(min_length=6, max_length=255)
     phone: str = Field(min_length=10, max_length=14)
     photo_url: Optional[str] = None
-    role_id: int
+    role_id: int = Field(gt=0)
 
 class ReadUser(UserBase):
     user_id: int
