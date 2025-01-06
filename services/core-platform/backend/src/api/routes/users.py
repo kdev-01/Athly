@@ -1,26 +1,59 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import EmailStr
+from fastapi import APIRouter, Depends, Query, Request, HTTPException
+from fastapi.responses import JSONResponse
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from typing import Annotated, Optional, List, Dict, Any
+from typing import Optional, Annotated, List, Dict, Any
+from pydantic import EmailStr
+from fastapi.security import OAuth2PasswordRequestForm
 from src.api.deps import get_db
 from src.models.user import User
-from src.schemas.user import UserBase, ReadUser
+from src.schemas.user import UserBase, ReadUser, DashboardData
 from src.services.auth_service import AuthService
 
 router = APIRouter()
 
-@router.post('/token')
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
-    user = AuthService.authenticate_user(form_data, db)
-    if not user:
-        raise HTTPException(status_code=400, detail="Credenciales inválidas")
-    return user
+@router.post('/login')
+def login(
+        form_data: OAuth2PasswordRequestForm = Depends(),
+        request: Request = None,
+        db: Session = Depends(get_db)
+    ):
+
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        pass
+
+    data = AuthService.authenticate_user(form_data.username, form_data.password, db)
+
+    if not data:
+        raise HTTPException(status_code=400, detail="Credenciales incorrectas. Verifique su correo o contraseña.")
+
+    response = JSONResponse(
+        content={"message": "Inicio de sesión exitoso"}
+    )
+
+    response.set_cookie(
+        key="access_token",
+        value=data['access_token'],
+        httponly=True,
+        samesite="Strict",
+        secure=False,
+        max_age=7 * 24 * 60 * 60
+    )
+
+    return response
 
 @router.get('/profile')
-def profile(current_user: Annotated[User, Depends(AuthService.decode_token)]):
-    return current_user
+def profile(
+        user: Annotated[DashboardData, Depends(AuthService.get_user_profile)]
+    ):
+    return user
+
+
+
+
+
+
 
 @router.post('/', response_model=Dict[str, Any])
 def create_user(user_schema: UserBase, db: Session = Depends(get_db)):
