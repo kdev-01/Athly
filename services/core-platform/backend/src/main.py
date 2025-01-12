@@ -20,4 +20,4 @@ app.add_middleware (
 def home():
     return {"Hello": "World :)"}
 
-app.include_router(users.router, prefix='/users', tags=['Users'])
+app.include_router(users.router, prefix='/user', tags=['Users'])

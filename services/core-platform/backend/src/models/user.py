@@ -1,5 +1,5 @@
 from src.database.base_class import Base
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -11,6 +11,7 @@ class User(Base):
     last_name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
     password = Column(String(255), nullable=False)
+    temporary_password = Column(Boolean, default=False)
     phone = Column(String(15), nullable=False)
     photo_url = Column(Text)
     created_at = Column(DateTime, default=func.now())

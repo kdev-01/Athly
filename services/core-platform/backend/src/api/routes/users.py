@@ -4,34 +4,23 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import Optional, Annotated, List, Dict, Any
 from pydantic import EmailStr
-from fastapi.security import OAuth2PasswordRequestForm
 from src.api.deps import get_db
 from src.models.user import User
-from src.schemas.user import UserBase, ReadUser, DashboardData
+from src.schemas.user import UserLogin, UserEmail, UserBase, ReadUser, DashboardData, CreateUser
 from src.services.auth_service import AuthService
+from src.services.email_service import EmailService
 
 router = APIRouter()
 
 @router.post('/login')
 def login(
-        form_data: OAuth2PasswordRequestForm = Depends(),
-        request: Request = None,
+        user: UserLogin,
         db: Session = Depends(get_db)
     ):
-
-    access_token = request.cookies.get("access_token")
-    if not access_token:
-        pass
-
-    data = AuthService.authenticate_user(form_data.username, form_data.password, db)
-
-    if not data:
-        raise HTTPException(status_code=400, detail="Credenciales incorrectas. Verifique su correo o contraseña.")
-
+    data = AuthService.authenticate_user(user.email, user.password, db)
     response = JSONResponse(
-        content={"message": "Inicio de sesión exitoso"}
+        content={"detail": "Inicio de sesión exitoso"}
     )
-
     response.set_cookie(
         key="access_token",
         value=data['access_token'],
@@ -43,20 +32,63 @@ def login(
 
     return response
 
+@router.get('/verify/token')
+def verify_token(
+        authenticated: Annotated[bool, Depends(AuthService.verify_token)]
+    ):
+    
+    if not authenticated:
+        return {"detail": False}
+    
+    return {"detail": True}
+
 @router.get('/profile')
 def profile(
         user: Annotated[DashboardData, Depends(AuthService.get_user_profile)]
     ):
     return user
 
+@router.post('/forgot/password')
+async def forgot_password(
+        user_email: UserEmail,
+        db: Session = Depends(get_db)
+    ):
+    password = AuthService.generate_password(user_email.email, db)
+    try:
+        email_service = EmailService()
+        await email_service.send_password_recovery(user_email.email, password)
+    except Exception:
+        raise HTTPException(status_code=500, detail="Ocurrió un error. Intenta nuevamente.")
+    
+    response = JSONResponse(
+        content={"detail": "Se ha enviado un enlace para recuperar tu contraseña."}
+    )
 
+    return response
 
+@router.post('/reset/password')
+async def reset_password(
+        request: Request,
+        db: Session = Depends(get_db)
+    ):
+    try:
+        body = await request.json()
+        email = body.get("email")
+        temporaryPassword = body.get("temporaryPassword")
+        newPassword = body.get("newPassword")
+        confirmPassword = body.get("confirmPassword")
+        AuthService.change_password(email, temporaryPassword, newPassword, confirmPassword, db);
+        response = JSONResponse(
+            content={"detail": "La contraseña ha sido cambiada con exito."}
+        )
 
-
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post('/', response_model=Dict[str, Any])
-def create_user(user_schema: UserBase, db: Session = Depends(get_db)):
+def create_user(user_schema: CreateUser, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == user_schema.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
 

@@ -26,3 +26,9 @@ class DashboardData(BaseModel):
     last_name: str = Field(...)
     photo_url: Optional[str] = None
     
+class UserLogin(BaseModel):
+    email: EmailStr = Field(...)
+    password: str = Field(..., min_length=6, max_length=255)
+
+class UserEmail(BaseModel):
+    email: EmailStr = Field(...)
