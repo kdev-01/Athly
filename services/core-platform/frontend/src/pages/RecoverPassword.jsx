@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
 import { userRecoverPassword } from "../schemas/user";
 import { useFetch } from "../hooks/useFetch";
@@ -17,25 +16,23 @@ export default function RecoverPassword() {
 	} = useForm({
 		resolver: zodResolver(userRecoverPassword),
 	});
-	const navigate = useNavigate();
 	const { loading, error, postRequest } = useFetch();
-	const email = window.localStorage.getItem("email");
+
 	const submitFormData = async (formData) => {
+		const email = window.localStorage.getItem("email");
 		formData.email = email;
 		const response = await postRequest(formData, "/user/reset/password");
 		if (error) {
 			toast.error(error);
 		}
 
-		if (response?.success) {
-			toast.success(response.detail);
+		if (response.success) {
+			toast.success(response.message);
 			localStorage.removeItem("email");
 			await new Promise((resolve) => setTimeout(resolve, 3000));
-			navigate("/login");
+			window.location.href = "/login";
 		} else {
-			toast.error(response?.detail);
-			await new Promise((resolve) => setTimeout(resolve, 3000));
-			navigate("/");
+			toast.error(response.message);
 		}
 	};
 
@@ -91,9 +88,9 @@ export default function RecoverPassword() {
 						className='w-full h-full object-cover'
 					/>
 				</section>
-
-				<Toaster position='top-right' />
 			</main>
+
+			<Toaster position='top-right' />
 		</>
 	);
 }

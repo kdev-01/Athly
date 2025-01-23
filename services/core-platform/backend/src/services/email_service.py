@@ -29,14 +29,33 @@ class EmailService:
     async def send_password_recovery(self, email_to: str, password: str):
         subject = "Recuperación de contraseña"
         body = f"""
-                <!DOCTYPE html>
-                <html>
-                    <body>
-                        <p>Hola,</p>
-                        <p>Aquí tienes una contraseña temporal:</p>
-                        <span>{password}</span>
-                        <p>Inicia sesión conjunto con tu correo electrónico.</p>
-                    </body>
-                </html>
-                """
+        <!DOCTYPE html>
+        <html>
+            <body>
+                <p>Hola,</p>
+                <p>Aquí tienes una contraseña temporal:</p>
+                <span>{password}</span>
+                <p>Inicia sesión conjunto con tu correo electrónico.</p>
+            </body>
+        </html>
+        """
+        await self.send_email(subject, email_to, body)
+
+    async def send_access_details(self, email_to: str, password: str):
+        access_link = "http://localhost:5173/login"
+        subject = "Detalles de acceso a la plataforma"
+        body = f"""
+        <!DOCTYPE html>
+        <html>
+            <body>
+                <p>Hola,</p>
+                <p>Nos complace informarte que ya tienes acceso a nuestra plataforma. Para ingresar, por favor utiliza el siguiente enlace:</p>
+                <p><a href="{access_link}">{access_link}</a></p>
+                <p>Para iniciar sesión, emplea tu correo electrónico (<strong>{email_to}</strong>) y la siguiente contraseña temporal:</p>
+                <p><strong>{password}</strong></p>
+                <p>Saludos cordiales,</p>
+                <strong>Federación Deportiva Provincial Estudiantil de Napo<strong>
+            </body>
+        </html>
+        """
         await self.send_email(subject, email_to, body)

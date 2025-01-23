@@ -1,5 +1,5 @@
 from src.database.base_class import Base
-from sqlalchemy import Column, Integer, String, Boolean, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -13,13 +13,12 @@ class User(Base):
     password = Column(String(255), nullable=False)
     temporary_password = Column(Boolean, default=False)
     phone = Column(String(15), nullable=False)
-    photo_url = Column(Text)
+    photo_url = Column(String(255), default="http://127.0.0.1:8000/images/profile/user.png")
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role_id = Column(Integer, ForeignKey('roles.role_id'), nullable=False)
 
     role = relationship("Role")
-    security_codes = relationship("SecurityCode", back_populates="user")
     workshops = relationship("WorkshopAttendance", back_populates="user")
     representative = relationship("Representative", back_populates="user", uselist=False)
     judge = relationship("Judge", uselist=False, back_populates="user")

@@ -1,10 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
 import { userLogin } from "../schemas/user";
 import { useFetch } from "../hooks/useFetch";
-//import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import BackButton from "../components/BackButton";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
@@ -18,24 +16,27 @@ export default function SignIn() {
 	} = useForm({
 		resolver: zodResolver(userLogin),
 	});
-	const navigate = useNavigate();
-	//const { error: authError } = useAuthRedirect();
 	const { loading, error, postRequest } = useFetch();
+
 	const submitFormData = async (formData) => {
 		const response = await postRequest(formData, "/user/login");
 		if (error) {
 			toast.error(error);
 		}
 
-		if (response?.success) {
-			navigate("/dashboard");
+		if (response.success) {
+			window.location.href = "/dashboard";
 		} else {
-			if (response?.detail === "Cambio requerido.") {
-				navigate("/reset/password");
-				return;
+			window.localStorage.setItem("email", formData.email);
+			if (response.message === "Actualización  requerida.") {
+				window.location.href = "/first/register";
 			}
 
-			toast.error(response?.detail /*[0].msg*/);
+			if (response.message === "Cambio requerido.") {
+				window.location.href = "/reset/password";
+			}
+
+			toast.error(response.message);
 		}
 	};
 
@@ -86,9 +87,9 @@ export default function SignIn() {
 						className='w-full h-full object-cover'
 					/>
 				</section>
-
-				<Toaster position='top-right' />
 			</main>
+
+			<Toaster position='top-right' />
 		</>
 	);
 }

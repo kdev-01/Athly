@@ -1,6 +1,5 @@
 from .role import Role
 from .user import User
-from .security_code import SecurityCode
 from .workshop import Workshop
 from .workshop_attendance import WorkshopAttendance
 from .educational_institution import EducationalInstitution
@@ -24,7 +23,6 @@ from .athletics_result import AthleticsResult
 __all__ = [
     "Role",
     "User",
-    "SecurityCode",
     "Workshop",
     "WorkshopAttendance",
     "EducationalInstitution",

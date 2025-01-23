@@ -1,34 +1,28 @@
 from pydantic import BaseModel, Field, EmailStr
+from typing_extensions import Annotated
 from typing import Optional
-from datetime import datetime
 
 class UserBase(BaseModel):
-    first_name: str = Field(..., min_length=3, max_length=50)
-    last_name: str = Field(..., min_length=3, max_length=50)
-    email: EmailStr = Field(...)
-    phone: str = Field(..., min_length=10, max_length=14)
-    photo_url: Optional[str] = None
-    role_id: int = Field(..., gt=0)
-
-class CreateUser(UserBase):
-    password: str = Field(..., min_length=6, max_length=255)
-
-class ReadUser(UserBase):
-    user_id: int = Field(...)
-    created_at: datetime = Field(...)
-    updated_at: datetime = Field(...)
+    first_name: Annotated[str, Field(min_length=3, max_length=50)]
+    last_name: Annotated[str, Field(min_length=3, max_length=50)]
+    email: EmailStr
+    phone: Annotated[str, Field(min_length=10, max_length=14)]
 
     class Config:
-        from_attributes: True
+        anystr_strip_whitespace = True
 
-class DashboardData(BaseModel):
-    first_name: str = Field(...)
-    last_name: str = Field(...)
-    photo_url: Optional[str] = None
-    
-class UserLogin(BaseModel):
-    email: EmailStr = Field(...)
-    password: str = Field(..., min_length=6, max_length=255)
+class UserCredentials(BaseModel):
+    email: EmailStr
+    password: Annotated[str, Field(min_length=6, max_length=255)]
 
 class UserEmail(BaseModel):
-    email: EmailStr = Field(...)
+    email: EmailStr
+
+class GetUser(UserBase):
+    user_id: Annotated[int, Field(ge=0)]
+    role_name: Annotated[str, Field(min_length=3, max_length=50)]
+
+class AddUser(BaseModel):
+    email: EmailStr
+    institution_name: Optional[Annotated[str, Field(min_length=3, max_length=100)]] = None
+    role_name: Annotated[str, Field(min_length=3, max_length=50)]
