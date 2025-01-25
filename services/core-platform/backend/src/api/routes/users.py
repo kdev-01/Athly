@@ -47,6 +47,42 @@ def login(
 
     return response
 
+@router.post('/register/data')
+async def register_user_data(
+        first_name: Annotated[str, Form(..., min_length=3, max_length=50)],
+        last_name: Annotated[str, Form(..., min_length=3, max_length=50)],
+        email: Annotated[EmailStr, Form(...)],
+        phone: Annotated[str, Form(..., min_length=10, max_length=14)],
+        photo: UploadFile | None = None,
+        db: Session = Depends(get_db)
+    ):
+    try:
+        profile_image = None
+        filename = None
+        if photo:
+            if photo.content_type not in ["image/png", "image/jpeg"]:
+                raise HTTPException(status_code=400, detail="Tipo de archivo no permitido")
+            
+            filename = photo.filename
+            profile_image = await photo.read()
+
+        UserService.register_data(profile_image, filename, first_name, last_name, email, phone, db)
+        return standard_response(
+            success=True,
+            message="Se han agregado a los usuarios correctamente.",
+        )
+    except ValueError as e:
+        return standard_response(
+            success=False,
+            message=f"Error en la carga de datos: {str(e)}",
+        )
+    except Exception as e:
+        return standard_response(
+            success=False,
+            message="Error interno del servidor.",
+            data={"error": str(e)},
+        )
+
 @router.post('/forgot/password')
 async def forgot_password(
         user_email: UserEmail,
@@ -140,44 +176,6 @@ async def mass_load_users(
         return standard_response(
             success=False,
             message=f"Error en la carga masiva: {str(e)}",
-        )
-    except Exception as e:
-        return standard_response(
-            success=False,
-            message="Error interno del servidor.",
-            data={"error": str(e)},
-        )
-
-@router.post('/register/data')
-@requires_role("Administrador")
-async def register_user_data(
-        first_name: Annotated[str, Form(..., min_length=3, max_length=50)],
-        last_name: Annotated[str, Form(..., min_length=3, max_length=50)],
-        email: Annotated[EmailStr, Form(...)],
-        phone: Annotated[str, Form(..., min_length=10, max_length=14)],
-        photo: UploadFile | None = None,
-        db: Session = Depends(get_db),
-        user_credentials: dict = Depends(AuthService.decode_token)
-    ):
-    try:
-        profile_image = None
-        filename = None
-        if photo:
-            if photo.content_type not in ["image/png", "image/jpeg"]:
-                raise HTTPException(status_code=400, detail="Tipo de archivo no permitido")
-            
-            filename = photo.filename
-            profile_image = await photo.read()
-
-        UserService.register_data(profile_image, filename, first_name, last_name, email, phone, db)
-        return standard_response(
-            success=True,
-            message="Se han agregado a los usuarios correctamente.",
-        )
-    except ValueError as e:
-        return standard_response(
-            success=False,
-            message=f"Error en la carga de datos: {str(e)}",
         )
     except Exception as e:
         return standard_response(
