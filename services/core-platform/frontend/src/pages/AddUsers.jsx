@@ -25,7 +25,6 @@ export default function AddUsers() {
 	const selectedRole = watch("role_name");
 
 	useEffect(() => {
-		console.log("Hola");
 		if (selectedRole !== "Institución educativa") {
 			reset(
 				{ institution_name: "" },
@@ -52,7 +51,6 @@ export default function AddUsers() {
 			role_name: "",
 			institution_name: "",
 		});
-		console.log(users);
 	};
 
 	const handleEditUser = (index) => {
@@ -76,7 +74,18 @@ export default function AddUsers() {
 						return;
 					}
 
-					const response = postRequest(users, "/user/load/users");
+					const filteredUsers = users.map((user) => {
+						if (user.role_name !== "Institución educativa") {
+							const { institution_name, ...rest } = user;
+							return rest;
+						}
+						return user;
+					});
+
+					const response = postRequest(
+						filteredUsers,
+						"/user/load/users",
+					);
 					toast.promise(response, {
 						loading: "Cargando...",
 						success: (data) => {
