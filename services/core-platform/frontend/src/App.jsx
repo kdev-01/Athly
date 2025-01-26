@@ -19,7 +19,7 @@ export default function App() {
 	useEffect(() => {
 		const verifyAuthentication = async () => {
 			const response = await getRequest("/user/auth/check");
-			setIsAuthenticated(response.success);
+			setIsAuthenticated(response?.success);
 		};
 
 		verifyAuthentication();
@@ -28,6 +28,7 @@ export default function App() {
 	if (loading) return <div className='text-center'>Cargando...</div>;
 
 	return (
+		
 		<BrowserRouter>
 			<Routes>
 				<Route path='/' element={<HomePage />} />
@@ -59,12 +60,13 @@ export default function App() {
 						element={<RecoverPassword />}
 					/>
 				</Route>
-
+				{
 				<Route
 					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
 				>
 					<Route path='/dashboard' element={<Dashboard />} />
 				</Route>
+					}
 
 				<Route
 					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
@@ -76,7 +78,11 @@ export default function App() {
 				>
 					<Route path='/add/users' element={<AddUsers />} />
 				</Route>
+
+
+				
 			</Routes>
 		</BrowserRouter>
+		
 	);
 }

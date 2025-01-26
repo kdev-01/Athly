@@ -1,5 +1,5 @@
 from src.database.base_class import Base
-from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 class Workshop(Base):
@@ -10,5 +10,7 @@ class Workshop(Base):
     location = Column(Text, nullable=False)
     date_time = Column(DateTime, nullable=False)
     description = Column(Text)
+    event_id = Column(Integer, ForeignKey('events.event_id'), nullable=False)  # Relación con eventos
 
-    attendees = relationship("WorkshopAttendance", back_populates="workshop")
+    event = relationship("Event", back_populates="workshops")  # Relación con la tabla Event
+    attendees = relationship("WorkshopAttendance", back_populates="workshop")  # Relación con WorkshopAttendance

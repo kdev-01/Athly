@@ -12,5 +12,8 @@ class Event(Base):
     registration_start_date = Column(Date)
     registration_end_date = Column(Date)
     sport_id = Column(Integer, ForeignKey('sports.sport_id'))
+    category_id = Column(Integer, ForeignKey('categories.category_id'))
 
     sport = relationship("Sport", back_populates="events")
+    categories = relationship("Category", back_populates="events")
+    workshops = relationship("Workshop", back_populates="event")
