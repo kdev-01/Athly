@@ -91,6 +91,7 @@ export default function UsersTable() {
 					<input
 						id='nameSearch'
 						type='text'
+						placeholder='Kevin Tapia'
 						{...register("nameSearch")}
 						className='p-2 border rounded-md w-60'
 					/>

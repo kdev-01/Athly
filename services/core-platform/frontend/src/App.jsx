@@ -11,6 +11,7 @@ import RecoverPassword from "./pages/RecoverPassword";
 import Dashboard from "./pages/Dashboard";
 import UserManager from "./pages/UserManager";
 import AddUsers from "./pages/AddUsers";
+import AddStudents from "./pages/AddStudents";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -35,25 +36,11 @@ export default function App() {
 					element={<PublicRoute isAuthenticated={isAuthenticated} />}
 				>
 					<Route path='/login' element={<SignIn />} />
-				</Route>
-
-				<Route
-					element={<PublicRoute isAuthenticated={isAuthenticated} />}
-				>
 					<Route path='/first/register' element={<UserRegister />} />
-				</Route>
-
-				<Route
-					element={<PublicRoute isAuthenticated={isAuthenticated} />}
-				>
 					<Route
 						path='/forgot/password'
 						element={<ForgotPassword />}
 					/>
-				</Route>
-				<Route
-					element={<PublicRoute isAuthenticated={isAuthenticated} />}
-				>
 					<Route
 						path='/reset/password'
 						element={<RecoverPassword />}
@@ -63,18 +50,12 @@ export default function App() {
 				<Route
 					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
 				>
-					<Route path='/dashboard' element={<Dashboard />} />
-				</Route>
-
-				<Route
-					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
-				>
-					<Route path='/users' element={<UserManager />} />
-				</Route>
-				<Route
-					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
-				>
-					<Route path='/add/users' element={<AddUsers />} />
+					<Route path='/dashboard' element={<Dashboard />}>
+						<Route index element={<h1>Inicio</h1>} />
+						<Route path='users' element={<UserManager />} />
+						<Route path='add/users' element={<AddUsers />} />
+						<Route path='add/students' element={<AddStudents />} />
+					</Route>
 				</Route>
 			</Routes>
 		</BrowserRouter>

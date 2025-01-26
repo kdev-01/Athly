@@ -140,3 +140,38 @@ class UserService:
 
         UserCRUD.update_data_user(db, user)
     
+    @staticmethod
+    def get_actions(
+        user: dict,
+        db: Session
+    ):
+        profile = UserCRUD.get_user_by_email(db, user.get("email"))
+        role = user.get("role")
+
+        if role == "Administrador":
+            return {
+                "profile": {
+                    "photo": profile.photo_url,
+                    "name": profile.first_name + " " + profile.last_name,
+                    "role": role
+                },
+                "actions": [
+                    { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
+                    { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" }
+                ]
+            }
+        
+        if role == "Institución educativa":
+            return {
+                "actions": [
+                    { "href": "add/students", "label": "Inscribir estudiantes", "icon": "" }
+                ]
+            }
+        
+        if role == "Juez":
+            return {
+                "actions": [
+                    { "href": "/", "label": "Home", "icon": "HomeIcon" }
+                ]
+            }
+        
