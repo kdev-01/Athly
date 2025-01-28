@@ -157,9 +157,12 @@ class UserService:
             return {
                 "profile": user_profile,
                 "actions": [
+                    { "href": "events", "label": "Eventos", "icon": "AddUsersIcon" },
                     { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
                     { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" },
-                    { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" }
+                    { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" },
+                    { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
+                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }
                 ]
             }
         

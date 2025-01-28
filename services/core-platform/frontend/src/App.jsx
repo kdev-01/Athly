@@ -13,6 +13,10 @@ import UserManager from "./pages/UserManager";
 import AddUsers from "./pages/AddUsers";
 import AddStudents from "./pages/AddStudents";
 import ManageEnrollments from "./pages/ManageEnrollments";
+import EventsAll from "./pages/Events/EventsAll";
+//import AddStudents from "./pages/AddStudents";
+import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
+import Home from "./pages/Home";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -21,7 +25,7 @@ export default function App() {
 	useEffect(() => {
 		const verifyAuthentication = async () => {
 			const response = await getRequest("/user/auth/check");
-			setIsAuthenticated(response.success);
+			setIsAuthenticated(response?.success);
 		};
 
 		verifyAuthentication();
@@ -32,7 +36,7 @@ export default function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path='/' element={<HomePage />} />
+				<Route path='/home' element={<Home />} />
 				<Route
 					element={<PublicRoute isAuthenticated={isAuthenticated} />}
 				>
@@ -60,6 +64,10 @@ export default function App() {
 							path='enrollments/students'
 							element={<ManageEnrollments />}
 						/>
+						<Route path='events' element={<EventsAll />} />
+						<Route path='venues' element={<EventsEvenues />} />
+
+						{/*<Route path='add/students' element={<AddStudents />} />*/}
 					</Route>
 				</Route>
 			</Routes>
