@@ -60,7 +60,7 @@ const FormEvent = ({ onEventCreated, eventToEdit }) => {
   };
 
   return (
-    <div className="bg-gray-100 p-6">
+    <div className=" p-6">
       <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-6xl mx-auto">
         {/* Barra negra superior */}
         <div className="bg-black text-white text-center font-bold py-3">
@@ -187,7 +187,7 @@ const FormEvent = ({ onEventCreated, eventToEdit }) => {
           {/* Botón de Enviar */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-700"
+            className="w-full bg-black text-white px-4 py-2 rounded-md font-semibold hover:bg-gray-800"
           >
             {eventToEdit ? "Actualizar Evento" : "Crear Evento"}
           </button>

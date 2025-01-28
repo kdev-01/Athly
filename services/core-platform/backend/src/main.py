@@ -11,6 +11,10 @@ from src.api.routes.events import router as events_router
 from src.api.routes.sports import router as sports_router
 from src.api.routes.categories import router as categories_router
 from src.api.routes.sports_venues import router as sports_venues
+from src.api.routes.workshops import router as workshops_router
+from src.api.routes.event_participants import router as event_participants_router
+from src.api.routes.institutions import router as institutions_router
+from src.api.routes.venue_event import router as venue_event_router
 
 app = FastAPI(
     title = settings.PROJECT_NAME,
@@ -45,3 +49,7 @@ app.include_router(events_router, prefix="/api/events", tags=["events"])
 app.include_router(sports_router, prefix="/api/sports", tags=["sports"])
 app.include_router(categories_router, prefix="/api/categories", tags=["categories"])
 app.include_router(sports_venues, prefix="/api/sports_venues", tags=["Sports Venues"])
+app.include_router(workshops_router, prefix="/api/workshops", tags=["Workshops"])
+app.include_router(event_participants_router, prefix="/api/event_participants", tags=["Event Participants"])
+app.include_router(institutions_router, prefix="/api/institutions", tags=["Institutions"])
+app.include_router(venue_event_router, prefix="/api/venue_event", tags=["Venues Event"])

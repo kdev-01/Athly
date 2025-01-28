@@ -14,7 +14,7 @@ def get_all_sports_venues(db: Session = Depends(get_db)):
 def get_sports_venue(venue_id: int, db: Session = Depends(get_db)):
     venue = sports_venues_crud.get(db, venue_id)
     if not venue:
-        raise HTTPException(status_code=404, detail="Sports venue not found")
+        raise HTTPException(status_code=404, detail="Escenario deportivo no encontrado")
     return venue
 
 @router.post("/", response_model=SportsVenueOut)
@@ -25,13 +25,13 @@ def create_sports_venue(venue: SportsVenueCreate, db: Session = Depends(get_db))
 def update_sports_venue(venue_id: int, venue: SportsVenueUpdate, db: Session = Depends(get_db)):
     existing_venue = sports_venues_crud.get(db, venue_id)
     if not existing_venue:
-        raise HTTPException(status_code=404, detail="Sports venue not found")
+        raise HTTPException(status_code=404, detail="Escenario deportivo no encontrado")
     return sports_venues_crud.update(db, venue_id, venue)
 
 @router.delete("/{venue_id}")
 def delete_sports_venue(venue_id: int, db: Session = Depends(get_db)):
     existing_venue = sports_venues_crud.get(db, venue_id)
     if not existing_venue:
-        raise HTTPException(status_code=404, detail="Sports venue not found")
+        raise HTTPException(status_code=404, detail="Escenario deportivo no encontrado")
     sports_venues_crud.delete(db, venue_id)
-    return {"message": "Sports venue deleted successfully"}
+    return {"message": "Escenario deportivo borrado correctamente"}

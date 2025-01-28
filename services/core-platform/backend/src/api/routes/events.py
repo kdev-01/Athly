@@ -1,3 +1,4 @@
+from typing import List  # Agrega esta línea
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.schemas.event import EventCreate, EventOut, EventUpdate
@@ -6,7 +7,7 @@ from src.api.deps import get_db
 
 router = APIRouter()
 
-@router.get("/", response_model=list[EventOut])
+@router.get("/", response_model=List[EventOut])  # Ahora 'List' estará definido
 def read_events(db: Session = Depends(get_db)):
     return get_events(db)
 
@@ -17,7 +18,6 @@ def add_event(event: EventCreate, db: Session = Depends(get_db)):
         return new_event
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 
 @router.put("/{event_id}", response_model=EventOut)
 def edit_event(event_id: int, event_data: EventUpdate, db: Session = Depends(get_db)):

@@ -9,4 +9,6 @@ class EducationalInstitution(Base):
     name = Column(String(100), nullable=False)
     address = Column(Text, nullable=False)
 
-    representatives = relationship("Representative", back_populates="institution")
+    # Relaciones
+    representatives = relationship("Representative", back_populates="institution")  # Relación con representantes
+    events = relationship("EventParticipant", back_populates="institution")  # Relación con eventos

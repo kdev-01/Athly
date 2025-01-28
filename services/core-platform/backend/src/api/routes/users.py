@@ -183,3 +183,28 @@ async def mass_load_users(
             message="Error interno del servidor.",
             data={"error": str(e)},
         )
+
+@router.get('/actions')
+def get_role_actions(
+        db: Session = Depends(get_db),
+        user_credentials: dict = Depends(AuthService.decode_token)
+    ):
+    try:
+        results = UserService.get_actions(user_credentials, db)
+        return standard_response(
+            success=True,
+            message="",
+            data=results
+        )
+    except ValueError as e:
+        return standard_response(
+            success=False,
+            message=f"Error al obtener las acciones: {str(e)}",
+        )
+    except Exception as e:
+        return standard_response(
+            success=False,
+            message="Error interno del servidor.",
+            data={"error": str(e)},
+        )
+    

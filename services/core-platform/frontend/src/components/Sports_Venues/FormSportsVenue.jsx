@@ -58,7 +58,10 @@ const FormSportsVenue = ({ onVenueCreated, venueToEdit }) => {
   };
 
   return (
+
     <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md w-full max-w-3xl mx-auto">
+
+        
       {/* Barra negra superior */}
       <div className="bg-black text-white text-center font-bold py-3">
         {venueToEdit ? "Editar Lugar Deportivo" : "Crear Lugar Deportivo"}

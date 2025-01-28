@@ -30,6 +30,7 @@ class EventCreate(EventBase):
             raise ValueError("La fecha de fin de inscripción no puede ser menor o igual a la fecha de inicio de inscripción.")
         return registration_end_date
 
+
 class EventUpdate(BaseModel):
     name: Optional[str]
     start_date: Optional[date]
@@ -38,10 +39,33 @@ class EventUpdate(BaseModel):
     registration_end_date: Optional[date]
     sport_id: Optional[int]
     category_id: Optional[int]
-    
 
-class EventOut(EventBase):
+
+class SportOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class CategoryOut(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class EventOut(BaseModel):
     event_id: int
+    name: str
+    start_date: date
+    end_date: date
+    registration_start_date: date
+    registration_end_date: date
+    sport: Optional[SportOut]  # Relación con deporte
+    category: Optional[CategoryOut]  # Relación con categoría
 
     class Config:
         orm_mode = True
