@@ -7,6 +7,7 @@ from src.utils.responses import standard_response
 from src.api.routes import users
 from src.api.routes import roles
 from src.api.routes import educational_institutions
+from src.api.routes import students
 
 app = FastAPI(
     title = settings.PROJECT_NAME,
@@ -37,3 +38,4 @@ def home():
 app.include_router(users.router, prefix='/user', tags=['Users'])
 app.include_router(roles.router, prefix='/rol', tags=['Roles'])
 app.include_router(educational_institutions.router, prefix='/edu', tags=['Institutions'])
+app.include_router(students.router, prefix='/student', tags=['Students'])

@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import UserManager from "./pages/UserManager";
 import AddUsers from "./pages/AddUsers";
 import AddStudents from "./pages/AddStudents";
+import ManageEnrollments from "./pages/ManageEnrollments";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -55,6 +56,10 @@ export default function App() {
 						<Route path='users' element={<UserManager />} />
 						<Route path='add/users' element={<AddUsers />} />
 						<Route path='add/students' element={<AddStudents />} />
+						<Route
+							path='enrollments/students'
+							element={<ManageEnrollments />}
+						/>
 					</Route>
 				</Route>
 			</Routes>

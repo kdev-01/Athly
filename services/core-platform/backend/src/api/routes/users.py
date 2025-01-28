@@ -47,6 +47,18 @@ def login(
 
     return response
 
+@router.get('/logout')
+def logout():
+    response = JSONResponse(
+        content={
+            "success": True,
+            "message": "Sesión cerrada exitosamente."
+        }
+    )
+    response.delete_cookie(key="access_token")
+
+    return response
+
 @router.post('/register/data')
 async def register_user_data(
         first_name: Annotated[str, Form(..., min_length=3, max_length=50)],

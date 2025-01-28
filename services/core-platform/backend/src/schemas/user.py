@@ -9,7 +9,7 @@ class UserBase(BaseModel):
     phone: Annotated[str, Field(min_length=10, max_length=14)]
 
     class Config:
-        anystr_strip_whitespace = True
+        str_strip_whitespace = True
 
 class UserCredentials(BaseModel):
     email: EmailStr

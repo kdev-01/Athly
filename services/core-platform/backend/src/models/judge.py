@@ -8,5 +8,6 @@ class Judge(Base):
     judge_id = Column(Integer, primary_key=True)
     status = Column(Boolean, default=True)
     user_id = Column(Integer, ForeignKey('users.user_id'))
+    is_deleted = Column(Boolean, default=False)
     
     user = relationship("User", back_populates="judge")

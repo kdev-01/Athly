@@ -14,6 +14,7 @@ class User(Base):
     temporary_password = Column(Boolean, default=False)
     phone = Column(String(15), nullable=False)
     photo_url = Column(String(255), default="http://127.0.0.1:8000/images/profile/user.png")
+    is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
     role_id = Column(Integer, ForeignKey('roles.role_id'), nullable=False)

@@ -9,4 +9,4 @@ class AcademicYear(Base):
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     
-    students = relationship("Student")
+    students = relationship("Student", back_populates="academic_year")

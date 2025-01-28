@@ -37,4 +37,4 @@ __pycache__/
 
 # Ignore the 'images' folder
 /services/core-platform/backend/images/*
-!/services/core-platform/backend/images/.gitkeep
+/services/core-platform/backend/documents/*

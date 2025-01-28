@@ -6,6 +6,7 @@ class InstitutionCRUD:
     def institution_exists(db: Session, name: str) -> str:
         return db.query(EducationalInstitution.institution_id).filter(EducationalInstitution.name == name).scalar()
     
+    @staticmethod
     def get_all_institution(db: Session) -> list[dict]:
         result = (
             db.query(

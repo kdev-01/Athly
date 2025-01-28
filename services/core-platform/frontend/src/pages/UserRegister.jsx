@@ -76,7 +76,7 @@ export default function UserRegister() {
 								className='w-20 h-20 rounded-full object-cover mb-3 border'
 							/>
 							<label className='cursor-pointer'>
-								<span className='text-blue-500 underline'>
+								<span className='hover:underline'>
 									Cargar foto
 								</span>
 								<input

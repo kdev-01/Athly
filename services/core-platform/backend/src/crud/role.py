@@ -6,6 +6,7 @@ class RoleCRUD:
     def role_exists(db: Session, role_name: str) -> int:
         return db.query(Role.role_id).filter(Role.name == role_name).scalar()
 
+    @staticmethod
     def get_all_roles(db: Session) -> list[dict]:
         result = (
             db.query(
