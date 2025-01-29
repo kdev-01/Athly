@@ -131,7 +131,8 @@ const EventDetails = ({ event }) => {
 			if (response.status === 201 || response.status === 200) {
 				const addedInstitution = allInstitutions.find(
 					(inst) =>
-						inst.institution_id === parseInt(selectedInstitutionId),
+						inst.institution_id ===
+						Number.parseInt(selectedInstitutionId),
 				);
 
 				setInstitutions([...institutions, addedInstitution]);
@@ -197,6 +198,7 @@ const EventDetails = ({ event }) => {
 								key={institution.institution_id}
 								className='mb-2 flex items-center gap-2'
 							>
+								{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 								<button
 									className='px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-800'
 									onClick={() =>
@@ -245,6 +247,7 @@ const EventDetails = ({ event }) => {
 								</option>
 							))}
 					</select>
+					{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 					<button
 						className='px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700'
 						onClick={addInstitutionToEvent}

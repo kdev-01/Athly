@@ -147,18 +147,20 @@ class UserService:
     ):
         profile = UserCRUD.get_user_by_email(db, user.get("email"))
         role = user.get("role")
+        user_profile = {
+            "photo": profile.photo_url,
+            "name": profile.first_name + " " + profile.last_name,
+            "role": role
+        }
 
         if role == "Administrador":
             return {
-                "profile": {
-                    "photo": profile.photo_url,
-                    "name": profile.first_name + " " + profile.last_name,
-                    "role": role
-                },
+                "profile": user_profile,
                 "actions": [
                     { "href": "events", "label": "Eventos", "icon": "AddUsersIcon" },
                     { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
                     { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" },
+                    { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" },
                     { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
                     { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }                  
                 ]
@@ -166,15 +168,17 @@ class UserService:
         
         if role == "Institución educativa":
             return {
+                "profile": user_profile,
                 "actions": [
-                    { "href": "add/students", "label": "Inscribir estudiantes", "icon": "" }
+                    { "href": "add/students", "label": "Inscribir estudiantes", "icon": "AddUsersIcon" }
                 ]
             }
         
         if role == "Juez":
             return {
+                "profile": user_profile,
                 "actions": [
-                    { "href": "/", "label": "Home", "icon": "HomeIcon" }
+                    { "href": "/", "label": "Home", "icon": "" }
                 ]
             }
         

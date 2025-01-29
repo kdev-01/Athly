@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import { useFetch } from "../hooks/useFetch";
+import logo from "/logo.png";
+import LogoutIcon from "../components/Icons/LogoutIcon";
 import HomeIcon from "../components/Icons/HomeIcon";
 import ManageUsersIcon from "../components/Icons/ManageUsersIcon";
 import AddUsersIcon from "../components/Icons/AddUsersIcon";
+import ManageEnrollmentsIcon from "../components/Icons/ManageEnrollmentsIcon";
 
 const icons = {
 	HomeIcon: HomeIcon,
 	ManageUsersIcon: ManageUsersIcon,
 	AddUsersIcon: AddUsersIcon,
+	ManageEnrollmentsIcon: ManageEnrollmentsIcon,
 };
 
 export default function Dashboard() {
@@ -26,10 +30,25 @@ export default function Dashboard() {
 		getUserActions();
 	}, []);
 
+	const handleLogout = async () => {
+		const response = await getRequest("/user/logout");
+
+		if (response?.success) {
+			window.location.href = "/login";
+		}
+	};
+
 	return (
-		<div className='grid grid-cols-[16rem_1fr] h-screen'>
-			<aside className='bg-gray-200 text-neutral-800 p-4 flex flex-col justify-between'>
-				<ul className='flex flex-col gap-4'>
+		<div className='grid grid-cols-[17rem_1fr] h-screen'>
+			<aside className='flex flex-col justify-between bg-gray-200 text-neutral-800 rounded-md'>
+				<header className='flex justify-center items-center gap-1 p-4'>
+					<img src={logo} alt='Logo FDPEN' className='w-16' />
+					<h2 className='text-sm text font-bold'>
+						Federación Deportiva Estudiantil de Napo
+					</h2>
+				</header>
+
+				<ul className='flex flex-col gap-2 p-4'>
 					<li>
 						<NavLink
 							to=''
@@ -62,24 +81,33 @@ export default function Dashboard() {
 					})}
 				</ul>
 
-				<footer className='flex mt-auto'>
+				<footer className='flex mt-auto border-t border-gray-300 p-4 relative'>
 					<img
 						src={actions?.profile.photo}
 						alt={`Foto de perfil de ${actions?.profile.name}`}
 						className='w-12 h-12 rounded-full mr-3'
 					/>
+
 					<div className='flex flex-col'>
 						<span>{actions?.profile.name}</span>
 						<span className='text-xs text-blue-500'>
 							{actions?.profile.role}
 						</span>
 					</div>
+
+					<button
+						type='button'
+						onClick={handleLogout}
+						className='absolute right-5 bottom-[27px] p-1 rounded-lg hover:bg-neutral-900 hover:text-neutral-100'
+					>
+						<LogoutIcon />
+					</button>
 				</footer>
 			</aside>
 
-			<main className='p-6 bg-gray-100 overflow-y-auto'>
+			<div className='overflow-y-auto'>
 				<Outlet />
-			</main>
+			</div>
 		</div>
 	);
 }

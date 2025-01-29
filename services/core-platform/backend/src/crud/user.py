@@ -8,7 +8,7 @@ from src.models.judge import Judge
 
 class UserCRUD:
     @staticmethod
-    def get_userole_credentials(db: Session,email: str):
+    def get_userole_credentials(db: Session, email: str):
         result = (
             db.query(User.email,
                      User.password,

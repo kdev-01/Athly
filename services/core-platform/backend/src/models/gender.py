@@ -8,4 +8,4 @@ class Gender(Base):
     gender_id = Column(Integer, primary_key=True)
     type = Column(String(20), nullable=False)
 
-    students = relationship("Student")
+    students = relationship("Student", back_populates="gender")

@@ -1,4 +1,11 @@
-export default function InputField({ label, type, id, register, errors }) {
+export default function InputField({
+	label,
+	type,
+	id,
+	placeholder,
+	register,
+	errors,
+}) {
 	return (
 		<label className='flex flex-col gap-1'>
 			{label}
@@ -6,6 +13,7 @@ export default function InputField({ label, type, id, register, errors }) {
 				type={type}
 				id={id}
 				{...register(id)}
+				placeholder={placeholder}
 				className='p-2 border rounded-md'
 			/>
 			{errors[id] && (

@@ -6,4 +6,3 @@ class Role(Base):
 
     role_id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
-    description = Column(String(255))

@@ -1,13 +1,19 @@
 import CloseIcon from "./Icons/CloseIcon";
 
-export default function Modal({ isOpen, onClose, title, children }) {
+export default function Modal({
+	isOpen,
+	onClose,
+	title,
+	children,
+	className = "w-2/5 h-auto",
+}) {
 	if (!isOpen) return null;
 
 	return (
 		<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-			<div className='bg-neutral-100 p-7 rounded w-2/5'>
+			<div className={`bg-neutral-100 p-7 rounded ${className}`}>
 				<div className='flex justify-between items-center mb-4'>
-					<h2 className='text-xl font-bold'>{title}</h2>
+					<h2 className='text-xl font-bold mb-6'>{title}</h2>
 					<button
 						type='button'
 						onClick={onClose}

@@ -11,12 +11,12 @@ import RecoverPassword from "./pages/RecoverPassword";
 import Dashboard from "./pages/Dashboard";
 import UserManager from "./pages/UserManager";
 import AddUsers from "./pages/AddUsers";
-import EventsAll from "./pages/Events/EventsAll"
+import AddStudents from "./pages/AddStudents";
+import ManageEnrollments from "./pages/ManageEnrollments";
+import EventsAll from "./pages/Events/EventsAll";
 //import AddStudents from "./pages/AddStudents";
-import EventsEvenues from "./pages/Sports_Venues/SportsVenues"
-import Home from "./pages/Home"
-
-
+import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
+import Home from "./pages/Home";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -34,10 +34,9 @@ export default function App() {
 	if (loading) return <div className='text-center'>Cargando...</div>;
 
 	return (
-		
 		<BrowserRouter>
 			<Routes>
-				<Route path='/home' element={<Home />} />
+				<Route path='/' element={<Home />} />
 				<Route
 					element={<PublicRoute isAuthenticated={isAuthenticated} />}
 				>
@@ -52,7 +51,7 @@ export default function App() {
 						element={<RecoverPassword />}
 					/>
 				</Route>
-				
+
 				<Route
 					element={<PrivateRoute isAuthenticated={isAuthenticated} />}
 				>
@@ -60,15 +59,18 @@ export default function App() {
 						<Route index element={<h1>Inicio</h1>} />
 						<Route path='users' element={<UserManager />} />
 						<Route path='add/users' element={<AddUsers />} />
+						<Route path='add/students' element={<AddStudents />} />
+						<Route
+							path='enrollments/students'
+							element={<ManageEnrollments />}
+						/>
 						<Route path='events' element={<EventsAll />} />
 						<Route path='venues' element={<EventsEvenues />} />
-						
+
 						{/*<Route path='add/students' element={<AddStudents />} />*/}
 					</Route>
 				</Route>
-	
 			</Routes>
 		</BrowserRouter>
-		
 	);
 }

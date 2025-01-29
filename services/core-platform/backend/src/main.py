@@ -7,6 +7,7 @@ from src.utils.responses import standard_response
 from src.api.routes import users
 from src.api.routes import roles
 from src.api.routes import educational_institutions
+from src.api.routes import students
 from src.api.routes.events import router as events_router
 from src.api.routes.sports import router as sports_router
 from src.api.routes.categories import router as categories_router
@@ -45,6 +46,7 @@ def home():
 app.include_router(users.router, prefix='/user', tags=['Users'])
 app.include_router(roles.router, prefix='/rol', tags=['Roles'])
 app.include_router(educational_institutions.router, prefix='/edu', tags=['Institutions'])
+app.include_router(students.router, prefix='/student', tags=['Students'])
 app.include_router(events_router, prefix="/api/events", tags=["events"])
 app.include_router(sports_router, prefix="/api/sports", tags=["sports"])
 app.include_router(categories_router, prefix="/api/categories", tags=["categories"])

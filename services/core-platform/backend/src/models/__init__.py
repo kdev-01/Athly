@@ -19,6 +19,8 @@ from .basketball_result import BasketballResult
 from .football_result import FootballResult
 from .chess_result import ChessResult
 from .athletics_result import AthleticsResult
+from .event_participants import EventParticipant
+from .venues_event import VenueEvent
 
 __all__ = [
     "Role",
@@ -42,4 +44,6 @@ __all__ = [
     "FootballResult",
     "ChessResult",
     "AthleticsResult",
+    "EventParticipant",
+    "VenueEvent"
 ]
