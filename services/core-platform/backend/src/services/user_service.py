@@ -160,8 +160,7 @@ class UserService:
                     { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
                     { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" },
                     { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
-                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }
-                    
+                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }                  
                 ]
             }
         

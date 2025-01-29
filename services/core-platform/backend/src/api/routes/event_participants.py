@@ -38,28 +38,21 @@ def read_event_participants(
         raise HTTPException(status_code=404, detail="No participants found for this event")
     return participants
 
-
-@router.post("/add-multiple", response_model=list[EventParticipantCreate])
-def create_multiple_event_participants(
-    data: dict,
+@router.post("/", response_model=EventParticipant)
+def create_event_participant_record(
+    participant: EventParticipantCreate,
     db: Session = Depends(get_db)
 ):
-    id_event = data.get("id_event")
-    institutions = data.get("institutions")
+    # Verificar si ya existe el participante en el evento
+    existing_participant = get_event_participant_by_ids(
+        db, participant.id_event, participant.id_educational_institution
+    )
+    
+    if existing_participant:
+        raise HTTPException(status_code=400, detail="Participant already exists in the event")
 
-    if not id_event or not institutions:
-        raise HTTPException(status_code=400, detail="id_event or institutions missing")
-
-    created_participants = []
-    for institution_id in institutions:
-        participant = EventParticipantCreate(
-            id_event=id_event,
-            id_educational_institution=institution_id
-        )
-        created_participant = create_event_participant(db, participant)
-        created_participants.append(created_participant)
-
-    return created_participants
+    created_participant = create_event_participant(db, participant)
+    return created_participant
 
 @router.put("/{id_event}/{id_educational_institution}", response_model=EventParticipant)
 def update_event_participant_details(

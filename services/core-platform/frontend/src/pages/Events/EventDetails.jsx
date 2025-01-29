@@ -3,206 +3,270 @@ import axios from "axios";
 import Calendar from "../../components/Events/Calendar";
 
 const EventDetails = ({ event }) => {
-  const [workshop, setWorkshop] = useState(null);
-  const [institutions, setInstitutions] = useState([]);
-  const [venues, setVenues] = useState([]);
+	const [workshop, setWorkshop] = useState(null);
+	const [institutions, setInstitutions] = useState([]);
+	const [allInstitutions, setAllInstitutions] = useState([]);
+	const [venues, setVenues] = useState([]);
 
-  useEffect(() => {
-    // Cargar workshops y buscar el relacionado al evento
-    axios
-      .get("http://localhost:8000/api/workshops")
-      .then((response) => {
-        const relatedWorkshop = response.data.find(
-          (ws) => ws.event_id === event.event_id
-        );
-        setWorkshop(relatedWorkshop);
-      })
-      .catch((error) =>
-        console.error("Error al cargar los congresillos técnicos:", error)
-      );
+	useEffect(() => {
+		// Cargar workshops y buscar el relacionado al evento
+		axios
+			.get("http://localhost:8000/api/workshops")
+			.then((response) => {
+				const relatedWorkshop = response.data.find(
+					(ws) => ws.event_id === event.event_id,
+				);
+				setWorkshop(relatedWorkshop);
+			})
+			.catch((error) =>
+				console.error(
+					"Error al cargar los congresillos técnicos:",
+					error,
+				),
+			);
 
-    // Cargar instituciones educativas relacionadas al evento
-    axios
-      .get("http://localhost:8000/api/event_participants")
-      .then((participantsResponse) => {
-        const participantInstitutions = participantsResponse.data
-          .filter((participant) => participant.id_event === event.event_id)
-          .map((participant) => participant.id_educational_institution);
+		// Cargar instituciones educativas relacionadas al evento
+		axios
+			.get("http://localhost:8000/api/event_participants")
+			.then((participantsResponse) => {
+				const participantInstitutions = participantsResponse.data
+					.filter(
+						(participant) =>
+							participant.id_event === event.event_id,
+					)
+					.map(
+						(participant) => participant.id_educational_institution,
+					);
 
-        axios
-          .get("http://localhost:8000/api/institutions")
-          .then((institutionsResponse) => {
-            const relatedInstitutions = institutionsResponse.data.filter(
-              (institution) =>
-                participantInstitutions.includes(institution.institution_id)
-            );
-            setInstitutions(relatedInstitutions);
-          })
-          .catch((error) =>
-            console.error("Error al cargar las instituciones:", error)
-          );
-      })
-      .catch((error) =>
-        console.error("Error al cargar los participantes del evento:", error)
-      );
+				axios
+					.get("http://localhost:8000/api/institutions")
+					.then((institutionsResponse) => {
+						const relatedInstitutions =
+							institutionsResponse.data.filter((institution) =>
+								participantInstitutions.includes(
+									institution.institution_id,
+								),
+							);
+						setInstitutions(relatedInstitutions);
+					})
+					.catch((error) =>
+						console.error(
+							"Error al cargar las instituciones:",
+							error,
+						),
+					);
+			})
+			.catch((error) =>
+				console.error(
+					"Error al cargar los participantes del evento:",
+					error,
+				),
+			);
 
-    // Cargar escenarios deportivos relacionados al evento
-    axios
-      .get("http://localhost:8000/api/venue_event")
-      .then((venuesResponse) => {
-        const relatedVenues = venuesResponse.data
-          .filter((venueEvent) => venueEvent.id_event === event.event_id)
-          .map((venueEvent) => venueEvent.id_venue);
+		// Cargar todas las instituciones disponibles
+		axios
+			.get("http://localhost:8000/api/institutions")
+			.then((response) => {
+				setAllInstitutions(response.data);
+			})
+			.catch((error) =>
+				console.error(
+					"Error al cargar todas las instituciones:",
+					error,
+				),
+			);
 
-        axios
-          .get("http://localhost:8000/api/sports_venues")
-          .then((venuesData) => {
-            const venuesList = venuesData.data.filter((venue) =>
-              relatedVenues.includes(venue.venue_id)
-            );
-            setVenues(venuesList);
-          })
-          .catch((error) =>
-            console.error("Error al cargar los escenarios deportivos:", error)
-          );
-      })
-      .catch((error) =>
-        console.error("Error al cargar la relación de escenarios:", error)
-      );
-  }, [event.event_id]);
+		// Cargar escenarios deportivos relacionados al evento
+		axios
+			.get("http://localhost:8000/api/venue_event")
+			.then((venuesResponse) => {
+				const relatedVenues = venuesResponse.data
+					.filter(
+						(venueEvent) => venueEvent.id_event === event.event_id,
+					)
+					.map((venueEvent) => venueEvent.id_venue);
 
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      {/* Título principal */}
-      <div className="bg-black text-white text-center font-bold py-3 rounded-t-lg">
-        DETALLES DEL EVENTO
-      </div>
+				axios
+					.get("http://localhost:8000/api/sports_venues")
+					.then((venuesData) => {
+						const venuesList = venuesData.data.filter((venue) =>
+							relatedVenues.includes(venue.venue_id),
+						);
+						setVenues(venuesList);
+					})
+					.catch((error) =>
+						console.error(
+							"Error al cargar los escenarios deportivos:",
+							error,
+						),
+					);
+			})
+			.catch((error) =>
+				console.error(
+					"Error al cargar la relación de escenarios:",
+					error,
+				),
+			);
+	}, [event.event_id]);
 
-      {/* Información principal del evento */}
-      <div className="p-6">
-        <h1 className="text-3xl font-bold mb-4">{event.name}</h1>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p>
-              <strong>Fecha de Inicio:</strong> {event.start_date}
-            </p>
-            <p>
-              <strong>Fecha Fin:</strong> {event.end_date}
-            </p>
-            <p>
-              <strong>Fecha Inicio Inscripciones:</strong>{" "}
-              {event.registration_start_date || "Desconocido"}
-            </p>
-            <p>
-              <strong>Fecha Fin de Inscripciones:</strong>{" "}
-              {event.registration_end_date || "Desconocido"}
-            </p>
-          </div>
-          <div>
-            <p>
-              <strong>Deporte:</strong> {event.sport?.name || "Desconocido"}
-            </p>
-            <p>
-              <strong>Categoría:</strong> {event.category?.name || "Desconocida"}
-            </p>
-          </div>
-        </div>
-      </div>
+	// Función para agregar una institución al evento
+	const addInstitutionToEvent = async () => {
+		const selectElement = document.getElementById("institutionSelect");
+		const selectedInstitutionId = selectElement.value;
 
-      {/* Congresillo Técnico */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h2 className="text-xl font-bold mb-4">CONGRESILLO TÉCNICO</h2>
-        {workshop ? (
-          <div className="border-t pt-4">
-            <p>
-              <strong>Nombre:</strong> {workshop.name}
-            </p>
-            <p>
-              <strong>Fecha:</strong> {workshop.date_time || "No especificada"}
-            </p>
-            <p>
-              <strong>Ubicación:</strong> {workshop.location || "No especificada"}
-            </p>
-            <p>
-              <strong>Descripción:</strong>{" "}
-              {workshop.description || "No especificada"}
-            </p>
-          </div>
-        ) : (
-          <p className="text-gray-600">
-            No hay información del congresillo técnico.
-          </p>
-        )}
-      </div>
+		if (!selectedInstitutionId) {
+			alert("Selecciona una institución para agregar.");
+			return;
+		}
 
-      {/* Instituciones Educativas Participantes */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h2 className="text-xl font-bold mb-4">
-          INSTITUCIONES EDUCATIVAS PARTICIPANTES
-        </h2>
-        {institutions.length > 0 ? (
-          <ul>
-            {institutions.map((institution) => (
-              <li key={institution.institution_id} className="mb-2">
-                <p>{institution.name}</p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">
-            No hay instituciones educativas participantes en este evento.
-          </p>
-        )}
-      </div>
+		try {
+			const response = await axios.post(
+				"http://localhost:8000/api/event_participants/",
+				{
+					id_event: event.event_id,
+					id_educational_institution: selectedInstitutionId,
+				},
+			);
 
-      {/* Escenarios Deportivos */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h2 className="text-xl font-bold mb-4">ESCENARIOS DEPORTIVOS</h2>
-        {venues.length > 0 ? (
-          <ul>
-            {venues.map((venue) => (
-              <li key={venue.venue_id} className="mb-2">
-                <p>
-                  <strong>Nombre:</strong> {venue.name}
-                </p>
-                <p>
-                  <strong>Ubicación:</strong> {venue.location}
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-600">
-            No hay escenarios deportivos asignados a este evento.
-          </p>
-        )}
-      </div>
+			if (response.status === 201 || response.status === 200) {
+				const addedInstitution = allInstitutions.find(
+					(inst) =>
+						inst.institution_id === parseInt(selectedInstitutionId),
+				);
 
-      {/* Calendario de Encuentros */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h2 className="text-xl font-bold mb-4">CALENDARIO DE ENCUENTROS</h2>
-        <div
-          className="bg-white border border-gray-300 rounded-lg overflow-y-auto p-4"
-          style={{ maxHeight: "800px", minHeight: "200px" }} // 📌 Ajuste de tamaño
-        >
-          <Calendar
-            teams={institutions.map((institution) => institution.name)}
-            scenarios={venues}
-            startDate={event.start_date}
-          />
-        </div>
-      </div>
+				setInstitutions([...institutions, addedInstitution]);
+				selectElement.value = "";
+			} else {
+				console.error("Error al agregar la institución:", response);
+			}
+		} catch (error) {
+			console.error("Error al conectar con la API:", error);
+			alert(
+				error.response?.data?.detail ||
+					"Error al agregar la institución.",
+			);
+		}
+	};
 
-      {/* Resultados de Encuentros */}
-      <div className="mt-6 bg-gray-100 p-6 rounded-lg shadow-inner">
-        <h2 className="text-xl font-bold mb-4">RESULTADOS DE ENCUENTROS</h2>
-        <div className="bg-white border border-gray-300 rounded-lg overflow-y-auto p-4">
+	// Función para eliminar una institución del evento
+	const removeInstitutionFromEvent = async (institutionId) => {
+		const confirmDelete = window.confirm(
+			"¿Estás seguro de que deseas eliminar esta institución?",
+		);
+		if (!confirmDelete) return;
 
-        </div>
-      </div>
+		try {
+			const response = await axios.delete(
+				`http://localhost:8000/api/event_participants/${event.event_id}/${institutionId}`,
+			);
 
-    </div>
-  );
+			if (response.status === 200) {
+				setInstitutions(
+					institutions.filter(
+						(inst) => inst.institution_id !== institutionId,
+					),
+				);
+			} else {
+				console.error("Error al eliminar la institución:", response);
+			}
+		} catch (error) {
+			console.error("Error al conectar con la API:", error);
+			alert(
+				error.response?.data?.detail ||
+					"Error al eliminar la institución.",
+			);
+		}
+	};
+
+	return (
+		<div className='bg-white p-6 rounded-lg shadow-md'>
+			{/* Título principal */}
+			<div className='bg-black text-white text-center font-bold py-3 rounded-t-lg'>
+				DETALLES DEL EVENTO
+			</div>
+
+			{/* Instituciones Educativas Participantes */}
+			<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
+				<h2 className='text-xl font-bold mb-4'>
+					INSTITUCIONES EDUCATIVAS PARTICIPANTES
+				</h2>
+				{institutions.length > 0 ? (
+					<ul>
+						{institutions.map((institution) => (
+							<li
+								key={institution.institution_id}
+								className='mb-2 flex items-center gap-2'
+							>
+								<button
+									className='px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-800'
+									onClick={() =>
+										removeInstitutionFromEvent(
+											institution.institution_id,
+										)
+									}
+								>
+									Eliminar
+								</button>
+								<p>{institution.name}</p>
+							</li>
+						))}
+					</ul>
+				) : (
+					<p className='text-gray-600'>
+						No hay instituciones educativas participantes en este
+						evento.
+					</p>
+				)}
+
+				{/* Listbox desplegable para agregar una nueva institución */}
+				<div className='flex gap-2 mt-4'>
+					<select
+						id='institutionSelect'
+						className='flex-1 p-2 border border-gray-300 rounded-lg'
+					>
+						<option value=''>
+							Seleccionar institución para agregar
+						</option>
+						{allInstitutions
+							.filter(
+								(institution) =>
+									!institutions.some(
+										(inst) =>
+											inst.institution_id ===
+											institution.institution_id,
+									),
+							)
+							.map((institution) => (
+								<option
+									key={institution.institution_id}
+									value={institution.institution_id}
+								>
+									{institution.name}
+								</option>
+							))}
+					</select>
+					<button
+						className='px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700'
+						onClick={addInstitutionToEvent}
+					>
+						Agregar
+					</button>
+				</div>
+			</div>
+
+			{/* Calendario de Encuentros */}
+			<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
+				<h2 className='text-xl font-bold mb-4'>
+					CALENDARIO DE ENCUENTROS
+				</h2>
+				<Calendar
+					teams={institutions.map((institution) => institution.name)}
+					scenarios={venues}
+					startDate={event.start_date}
+				/>
+			</div>
+		</div>
+	);
 };
 
 export default EventDetails;
