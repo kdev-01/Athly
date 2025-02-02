@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 class Event(Base):
     __tablename__ = "events"
 
-    event_id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, primary_key=True)
     name = Column(String(100), nullable=False)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
@@ -22,3 +22,4 @@ class Event(Base):
     workshops = relationship("Workshop", back_populates="event")  # Relación con Workshop
     participants = relationship("EventParticipant", back_populates="event")  # Relación con Participantes
     venues = relationship("VenueEvent", back_populates="event")  # Relación con Escenarios Deportivos
+    students = relationship("RegisteredStudent", back_populates="event")

@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 class Category(Base):
     __tablename__ = "categories"
 
-    category_id = Column(Integer, primary_key=True, index=True)
+    category_id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     tournament_type = Column(String(50))
     max_age = Column(Integer)

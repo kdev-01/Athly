@@ -6,7 +6,7 @@ class Student(Base):
     __tablename__ = 'students'
 
     student_id = Column(Integer, primary_key=True)
-    identification = Column(String(20), unique=True, nullable=False)
+    identification = Column(String(20), nullable=False)
     names = Column(String(70), nullable=False)
     surnames = Column(String(70), nullable=False)
     date_of_birth = Column(Date, nullable=False)
@@ -15,8 +15,6 @@ class Student(Base):
     identification_filename = Column(String(150), nullable=False)
     authorization_filename = Column(String(150), nullable=False)
     enrollment_filename = Column(String(150), nullable=False)
-    status = Column(String(15), nullable=False)
-    description = Column(Text, nullable=True)
     is_deleted = Column(Boolean, default=False)
     representative_id = Column(Integer, ForeignKey('representatives.representative_id'), nullable=False)
     gender_id = Column(Integer, ForeignKey('genders.gender_id'), nullable=False)
@@ -25,3 +23,4 @@ class Student(Base):
     representative = relationship("Representative", back_populates="students")
     gender = relationship("Gender", back_populates="students")
     academic_year = relationship("AcademicYear", back_populates="students")
+    registrations = relationship("RegisteredStudent", back_populates="student")
