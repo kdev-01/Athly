@@ -19,3 +19,15 @@ class GenderCRUD:
         )
         return result
     
+    @staticmethod
+    def get_all_genders(db: Session) -> list[dict]:
+        result = (
+            db.query(
+                Gender.gender_id.label('id'),
+                Gender.type.label('value')
+            )
+            .all()
+        )
+
+        return [dict(row._mapping) for row in result]
+    

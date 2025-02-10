@@ -15,6 +15,16 @@ class RepresentativeCRUD:
         return result
     
     @staticmethod
+    def get_representative(db: Session, email: str):
+        result = (
+            db.query(Representative.institution_id)
+            .join(User, User.user_id == Representative.user_id)
+            .filter(User.email == email)
+            .scalar()
+        )
+        return result
+    
+    @staticmethod
     def insert_representative(db: Session, representative: Dict):
         new_representative = Representative(**representative)
         db.add(new_representative)

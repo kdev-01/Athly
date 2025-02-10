@@ -1,7 +1,11 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
-from src.models.event import Event
 from src.schemas.event import EventCreate
 from src.schemas.event import EventUpdate
+from src.models.event import Event
+from src.models.registered_student import RegisteredStudent
+from src.models.student import Student
+from src.models.representative import Representative
 
 def create_event(db: Session, event: EventCreate):
     
@@ -33,10 +37,10 @@ def get_events(db: Session):
         result.append({
             "event_id": event.event_id,
             "name": event.name,
-            "start_date": event.start_date,
-            "end_date": event.end_date,
-            "registration_start_date": event.registration_start_date,
-            "registration_end_date": event.registration_end_date,
+            "start_date": str(event.start_date),
+            "end_date": str(event.end_date),
+            "registration_start_date": str(event.registration_start_date),
+            "registration_end_date": str(event.registration_end_date),
             "sport": {"id": event.sport.sport_id, "name": event.sport.name} if event.sport else None,
             "category": {"id": event.category.category_id, "name": event.category.name} if event.category else None,
         })
@@ -67,3 +71,114 @@ def update_event(db: Session, event_id: int, event_data: EventUpdate):
     db.commit()
     db.refresh(event)
     return event
+
+def get_event_participants(db: Session):
+    events = db.query(Event).options(
+        joinedload(Event.sport),
+        joinedload(Event.category),
+        joinedload(Event.students).joinedload(RegisteredStudent.student).joinedload(Student.representative).joinedload(Representative.institution),
+    ).all()
+
+    result = []
+    for event in events:
+        institutions_dict = {}
+        for registered_student in event.students:
+            student = registered_student.student
+            if not student or not student.representative or not student.representative.institution:
+                continue
+
+            institution = student.representative.institution
+            institution_id = institution.institution_id
+
+            if institution_id not in institutions_dict:
+                institutions_dict[institution_id] = {
+                    "id": institution_id,
+                    "name": institution.name,
+                    "students": []
+                }
+
+            institutions_dict[institution_id]["students"].append({
+                "id": student.student_id,
+                "identification": student.identification,
+                "name": student.names,
+                "surname": student.surnames,
+                "date_birth": str(student.date_of_birth),
+                "blood_type": student.blood_type,
+                "photo": student.photo_url,
+                "gender": student.gender_id,
+                "status": registered_student.status
+            })
+
+        result.append({
+            "event_id": event.event_id,
+            "name": event.name,
+            "start_date": str(event.start_date),
+            "end_date": str(event.end_date),
+            "registration_start_date": str(event.registration_start_date),
+            "registration_end_date": str(event.registration_end_date),
+            "sport": {"id": event.sport.sport_id, "name": event.sport.name} if event.sport else None,
+            "category": {"id": event.category.category_id, "name": event.category.name} if event.category else None,
+            "institutions": list(institutions_dict.values()),
+        })
+
+    return result
+
+def get_events_by_institution(db: Session, institution_id: int):
+    fecha_actual = func.current_date()
+
+    events = db.query(Event).options(
+        joinedload(Event.sport),
+        joinedload(Event.category),
+        joinedload(Event.students)
+        .joinedload(RegisteredStudent.student)
+        .joinedload(Student.representative)
+        .joinedload(Representative.institution)
+    ).filter(
+        Representative.institution_id == institution_id,
+        Event.start_date <= fecha_actual,
+        Event.end_date >= fecha_actual
+    ).all()
+
+    result = []
+    for event in events:
+        institution_name = None
+        students_list = []
+
+        for reg_student in event.students:
+            student = reg_student.student
+
+            if not student or not student.representative or not student.representative.institution:
+                continue
+
+            if institution_name is None:
+                institution_name = student.representative.institution.name
+            
+            if student.representative.institution_id == institution_id:
+                students_list.append({
+                    "id": student.student_id,
+                    "identification": student.identification,
+                    "name": student.names,
+                    "surname": student.surnames,
+                    "date_birth": str(student.date_of_birth),
+                    "blood_type": student.blood_type,
+                    "photo": student.photo_url,
+                    "gender": student.gender_id,
+                    "status": reg_student.status,
+                    "description": reg_student.description
+                })
+
+        if students_list:
+            result.append({
+                "event_id": event.event_id,
+                "name": event.name,
+                "start_date": str(event.start_date),
+                "end_date": str(event.end_date),
+                "registration_start_date": str(event.registration_start_date),
+                "registration_end_date": str(event.registration_end_date),
+                "sport": {"id": event.sport.sport_id, "name": event.sport.name} if event.sport else None,
+                "category": {"id": event.category.category_id, "name": event.category.name} if event.category else None,
+                "institution_name": institution_name,
+                "students": students_list
+            })
+
+    return result

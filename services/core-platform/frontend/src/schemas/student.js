@@ -43,9 +43,23 @@ const namesSchema = z
 		message: "No debe exceder los 70 caracteres",
 	});
 
-const selectionMenu = z
+const textSchema = z
 	.string()
-	.nonempty({ message: "Debe seleccionar una opción" });
+	.nonempty({ message: "El campo es obligatorio" })
+	.min(2, {
+		message: "Debe tener al menos 2 caracteres",
+	})
+	.max(300, {
+		message: "No debe exceder los 300 caracteres",
+	});
+
+const checkSchema = z
+	.array(z.string())
+	.nonempty({ message: "Debes seleccionar al menos un documento" });
+
+const selectionMenu = z
+	.union([z.string(), z.number()])
+	.refine((val) => val !== "", { message: "Debe seleccionar una opción" });
 
 const birthDateSchema = z
 	.string()
@@ -76,3 +90,36 @@ export const addStudent = z.object({
 	authorization: fileSchema,
 	enrollment: fileSchema,
 });
+
+export const updateStudent = z.object({
+	identification: identificationSchema,
+	names: namesSchema,
+	surnames: namesSchema,
+	gender: selectionMenu,
+	date_of_birth: birthDateSchema,
+	blood_type: selectionMenu,
+});
+
+export const rejectionDescription = z.object({
+	description: textSchema,
+	selectedDocuments: checkSchema,
+});
+
+export const getDynamicSchema = (invalidDocs) => {
+	const schemaShape = {};
+
+	if (invalidDocs.includes("Foto")) {
+		schemaShape.photo = photoSchema;
+	}
+	if (invalidDocs.includes("Cédula")) {
+		schemaShape.copy_identification = fileSchema;
+	}
+	if (invalidDocs.includes("Autorización")) {
+		schemaShape.authorization = fileSchema;
+	}
+	if (invalidDocs.includes("Matrícula")) {
+		schemaShape.enrollment = fileSchema;
+	}
+
+	return z.object(schemaShape);
+};

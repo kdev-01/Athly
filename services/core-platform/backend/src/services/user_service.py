@@ -145,7 +145,7 @@ class UserService:
         user: dict,
         db: Session
     ):
-        profile = UserCRUD.get_user_by_email(db, user.get("email"))
+        profile, institution = UserCRUD.get_user_with_institution(db, user.get("email"))
         role = user.get("role")
         user_profile = {
             "photo": profile.photo_url,
@@ -158,19 +158,24 @@ class UserService:
                 "profile": user_profile,
                 "actions": [
                     { "href": "events", "label": "Eventos", "icon": "AddUsersIcon" },
-                    { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
                     { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" },
+                    { "href": "users", "label": "Administrar usuarios", "icon": "ManageUsersIcon" },
                     { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" },
                     { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
-                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }                  
+                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" },
+                    { "href": "settings", "label": "Ajustes", "icon": "SettingsIcon" }
                 ]
             }
         
         if role == "Institución educativa":
             return {
-                "profile": user_profile,
+                "profile": user_profile | ({"institution": {
+                    "id": institution.institution_id,
+                    "name": institution.name
+                }} if institution else {}),
                 "actions": [
-                    { "href": "add/students", "label": "Inscribir estudiantes", "icon": "AddUsersIcon" }
+                    {"href": "list/events", "label": "Inscribir estudiantes", "icon": "AddUsersIcon"},
+                    {"href": "list/students", "label": "Estudiantes inscritos", "icon": "ListStudents"}
                 ]
             }
         

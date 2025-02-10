@@ -6,7 +6,7 @@ import { useFetch } from "../hooks/useFetch";
 import BackButton from "../components/BackButton";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
-import profileImage from "../assets/profileImage.png";
+import ProfileImage from "../assets/ProfileImage.png";
 import loginImage from "../assets/login.png";
 
 export default function UserRegister() {
@@ -70,7 +70,7 @@ export default function UserRegister() {
 								src={
 									image?.[0]
 										? URL.createObjectURL(image[0])
-										: profileImage
+										: ProfileImage
 								}
 								alt='Vista previa de foto'
 								className='w-20 h-20 rounded-full object-cover mb-3 border'

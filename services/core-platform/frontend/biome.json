@@ -17,7 +17,8 @@
 		"rules": {
 			"recommended": true,
 			"a11y": {
-				"noSvgWithoutTitle": "off"
+				"noSvgWithoutTitle": "off",
+				"useKeyWithClickEvents": "off"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off"

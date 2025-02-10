@@ -92,6 +92,7 @@ export const updateUser = z.object({
 	last_name: namesSchema,
 	email: emailSchema,
 	phone: phoneSchema,
+	listRoles: selectionMenuOp,
 });
 
 export const addUser = z

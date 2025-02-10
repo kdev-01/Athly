@@ -16,6 +16,7 @@ from src.api.routes.workshops import router as workshops_router
 from src.api.routes.event_participants import router as event_participants_router
 from src.api.routes.institutions import router as institutions_router
 from src.api.routes.venue_event import router as venue_event_router
+from src.api.routes import genders
 
 app = FastAPI(
     title = settings.PROJECT_NAME,
@@ -55,3 +56,4 @@ app.include_router(workshops_router, prefix="/api/workshops", tags=["Workshops"]
 app.include_router(event_participants_router, prefix="/api/event_participants", tags=["Event Participants"])
 app.include_router(institutions_router, prefix="/api/institutions", tags=["Institutions"])
 app.include_router(venue_event_router, prefix="/api/venue_event", tags=["Venues Event"])
+app.include_router(genders.router, prefix='/gender', tags=['Genders'])
