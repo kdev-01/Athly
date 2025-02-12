@@ -9,8 +9,6 @@ class Discipline(Base):
     type = Column(String(50), nullable=False)
     description = Column(Text)
     allowed_gender = Column(String(30), nullable=False)
-    sport_id = Column(Integer, ForeignKey('sports.sport_id'))
     category_id = Column(Integer, ForeignKey('categories.category_id'))
 
-    sport = relationship("Sport", back_populates="disciplines")
     category = relationship("Category", back_populates="disciplines")

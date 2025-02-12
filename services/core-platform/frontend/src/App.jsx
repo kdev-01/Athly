@@ -17,6 +17,7 @@ import EventsAll from "./pages/Events/EventsAll";
 //import AddStudents from "./pages/AddStudents";
 import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
 import Home from "./pages/Home";
+import CardResults from "./pages/Results/CardsResults";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -32,6 +33,16 @@ export default function App() {
 	}, []);
 
 	if (loading) return <div className='text-center'>Cargando...</div>;
+
+	const teamA = [
+		{ id: 1, name: "Carlos López" },
+		{ id: 2, name: "María García" },
+	];
+
+	const teamB = [
+		{ id: 3, name: "Jorge Ramírez" },
+		{ id: 4, name: "Luisa Pérez" },
+	];
 
 	return (
 		<BrowserRouter>
@@ -66,7 +77,10 @@ export default function App() {
 						/>
 						<Route path='events' element={<EventsAll />} />
 						<Route path='venues' element={<EventsEvenues />} />
-
+						<Route
+							path='footballresultsform'
+							element={<CardResults />}
+						/>
 						{/*<Route path='add/students' element={<AddStudents />} />*/}
 					</Route>
 				</Route>

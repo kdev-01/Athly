@@ -162,7 +162,9 @@ class UserService:
                     { "href": "add/users", "label": "Conceder accesos", "icon": "AddUsersIcon" },
                     { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" },
                     { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
-                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" }                  
+                    { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" },
+
+                         
                 ]
             }
         
@@ -178,7 +180,8 @@ class UserService:
             return {
                 "profile": user_profile,
                 "actions": [
-                    { "href": "/", "label": "Home", "icon": "" }
+                    { "href": "/", "label": "Home", "icon": "" },
+                    { "href": "footballresultsform", "label": "Reultados Futbol", "icon": "AddUsersIcon" },
                 ]
             }
         
