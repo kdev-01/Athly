@@ -7,7 +7,7 @@ export default function Button({
 	return (
 		<button
 			type={type}
-			className={`p-3 bg-neutral-900 text-neutral-100 font-bold rounded-md ${className}`}
+			className={`p-3 bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 shadow-md font-bold rounded-md ${className}`}
 			onClick={onClick}
 		>
 			{children}

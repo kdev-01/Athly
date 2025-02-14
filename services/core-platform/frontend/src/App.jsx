@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useFetch } from "./hooks/useFetch";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
-import HomePage from "./pages/HomePage";
+import Home from "./pages/Home";
 import SignIn from "./pages/SignIn";
 import UserRegister from "./pages/UserRegister";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -11,13 +11,13 @@ import RecoverPassword from "./pages/RecoverPassword";
 import Dashboard from "./pages/Dashboard";
 import UserManager from "./pages/UserManager";
 import AddUsers from "./pages/AddUsers";
-import AddStudents from "./pages/AddStudents";
+import ListEvents from "./pages/ListEvents";
 import ManageEnrollments from "./pages/ManageEnrollments";
 import EventsAll from "./pages/Events/EventsAll";
-//import AddStudents from "./pages/AddStudents";
-import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
-import Home from "./pages/Home";
+import ListEnrolledStudents from "./pages/ListEnrolledStudents";
+import Settings from "./pages/Settings";
 import CardResults from "./pages/Results/CardsResults";
+import Result from "./pages/Results/CardsResults";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -31,18 +31,6 @@ export default function App() {
 
 		verifyAuthentication();
 	}, []);
-
-	if (loading) return <div className='text-center'>Cargando...</div>;
-
-	const teamA = [
-		{ id: 1, name: "Carlos López" },
-		{ id: 2, name: "María García" },
-	];
-
-	const teamB = [
-		{ id: 3, name: "Jorge Ramírez" },
-		{ id: 4, name: "Luisa Pérez" },
-	];
 
 	return (
 		<BrowserRouter>
@@ -70,17 +58,13 @@ export default function App() {
 						<Route index element={<h1>Inicio</h1>} />
 						<Route path='users' element={<UserManager />} />
 						<Route path='add/users' element={<AddUsers />} />
-						<Route path='add/students' element={<AddStudents />} />
+						<Route path='list/events' element={<ListEvents />} />
 						<Route
 							path='enrollments/students'
 							element={<ManageEnrollments />}
 						/>
 						<Route path='events' element={<EventsAll />} />
-						<Route path='venues' element={<EventsEvenues />} />
-						<Route
-							path='footballresultsform'
-							element={<CardResults />}
-						/>
+						<Route path='results' element={<Result />} />
 						{/*<Route path='add/students' element={<AddStudents />} />*/}
 					</Route>
 				</Route>

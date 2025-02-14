@@ -6,7 +6,7 @@ class EventParticipant(Base):
     _tablename_ = "event_participants"
 
     # Claves primarias y foráneas (Muchos a Muchos)
-    id_event = Column(Integer, ForeignKey("events.event_id"), primary_key=True, index=True)
+    id_event = Column(Integer, ForeignKey("events.event_id"), primary_key=True)
     id_educational_institution = Column(Integer, ForeignKey("educational_institutions.institution_id"), primary_key=True, nullable=False)
 
     # Relaciones

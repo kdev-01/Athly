@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 class VenueEvent(Base):
     __tablename__ = "venues_event"
 
-    id_event = Column(Integer, ForeignKey("events.event_id"), primary_key=True, index=True)
+    id_event = Column(Integer, ForeignKey("events.event_id"), primary_key=True)
     id_venue = Column(Integer, ForeignKey("sports_venues.venue_id"), primary_key=True, nullable=False)
 
     # Relaciones

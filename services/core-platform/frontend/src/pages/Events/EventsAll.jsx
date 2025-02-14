@@ -46,8 +46,8 @@ const EventsAll = () => {
 					Gestión de Eventos Deportivos
 				</h1>
 				{!selectedEvent && (
-					// biome-ignore lint/a11y/useButtonType: <explanation>
 					<button
+						type='button'
 						onClick={handleOpenModal}
 						className='bg-black text-white py-2 px-4 rounded hover:bg-gray-800'
 					>
@@ -72,7 +72,6 @@ const EventsAll = () => {
 				<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6'>
 					{events.length > 0 ? (
 						events.map((event) => (
-							// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 							<div
 								key={event.event_id}
 								onClick={() => handleEventClick(event)} // Manejar clic en un evento

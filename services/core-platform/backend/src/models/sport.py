@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 class Sport(Base):
     __tablename__ = "sports"
 
-    sport_id = Column(Integer, primary_key=True, index=True)
+    sport_id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
 
     events = relationship("Event", back_populates="sport")  # Relación con eventos

@@ -27,6 +27,16 @@ class UserCRUD:
         return db.query(User).filter(User.email == email).first()
     
     @staticmethod
+    def get_user_with_institution(db: Session, email: str):
+        return (
+            db.query(User, EducationalInstitution)
+            .outerjoin(Representative, Representative.user_id == User.user_id)
+            .outerjoin(EducationalInstitution, EducationalInstitution.institution_id == Representative.institution_id)
+            .filter(User.email == email)
+            .first()
+        )
+    
+    @staticmethod
     def email_exists(db: Session, email: str) -> str:
         return db.query(User.email).filter(User.email == email).scalar()
     

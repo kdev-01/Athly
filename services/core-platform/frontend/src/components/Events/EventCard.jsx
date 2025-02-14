@@ -8,25 +8,35 @@ const EventCard = ({
 	categoryName,
 	onClick,
 }) => {
-	const getStatus = (endDate) => {
+	const getStatus = (endDate, startDate) => {
 		const today = new Date();
 		const eventEndDate = new Date(endDate);
+		const eventStartDate = new Date(startDate);
+
+		if (eventStartDate > today) {
+			return { text: "Sin empezar", color: "bg-gray-500" };
+		}
+
 		return eventEndDate >= today
 			? { text: "En progreso", color: "bg-green-600" }
-			: { text: "Finalizado", color: "bg-red-500" };
+			: { text: "Finalizado", color: "bg-red-600" };
 	};
 
-	const status = getStatus(endDate);
+	const status = getStatus(endDate, startDate);
 
 	return (
-		// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 		<div
-			className='relative border border-gray-300 rounded-lg overflow-hidden shadow-md hover:bg-gray-100 cursor-pointer'
+			className='relative border  rounded-lg overflow-hidden shadow-md hover:bg-gray-100 cursor-pointer'
 			onClick={onClick}
 		>
 			{/* Barra negra con el nombre */}
-			<div className='bg-black text-white text-center font-bold py-2'>
+			<div className=' text-center font-bold'>
 				{eventName}
+				<div
+					className={`absolute top-2 right-2 px-3 py-1 text-white text-sm font-bold rounded-full ${status.color}`}
+				>
+					{status.text}
+				</div>
 			</div>
 
 			{/* Contenido de la tarjeta */}
@@ -50,11 +60,6 @@ const EventCard = ({
 			</div>
 
 			{/* Estado del evento */}
-			<div
-				className={`absolute top-2 right-2 px-3 py-1 text-white text-sm font-bold rounded-full ${status.color}`}
-			>
-				{status.text}
-			</div>
 		</div>
 	);
 };

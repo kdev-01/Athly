@@ -1,4 +1,5 @@
 from fastapi import HTTPException, UploadFile
+import re
 
 async def validate_file(file: UploadFile, allowed_types: list, max_size: int):
     if file.content_type not in allowed_types:
@@ -51,3 +52,13 @@ def validate_name(name: str):
             detail="Debe tener entre 3 y 60 caracteres.",
         )
 
+
+def validate_blood_type(blood_type: str):
+    if not re.match(r"^(A|B|AB|O)[+-]$", blood_type):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "El formato del grupo sanguíneo no es válido. "
+                "Debe ser uno de: A+, A-, B+, B-, AB+, AB-, O+, O-."
+            ),
+        )

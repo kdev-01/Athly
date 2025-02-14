@@ -22,7 +22,6 @@ export default function UsersTable() {
 		resolver: zodResolver(updateUser),
 	});
 	const { data, loading, error, getRequest } = useFetch();
-	const [authenticated, setAuthenticated] = useState(true);
 	const [editModal, setEditModal] = useState(false);
 	const [editUser, setEditUser] = useState(null);
 
@@ -36,30 +35,23 @@ export default function UsersTable() {
 
 			if (!response.success) {
 				toast.error(response.message);
-				await new Promise((resolve) => setTimeout(resolve, 3000));
-			} else {
-				setAuthenticated(false);
 			}
 		};
 
 		fetchData();
 	}, []);
 
-	const listRoles = watch("listRoles", "Todos");
+	const roles = watch("roles", "Todos");
 	const nameSearch = watch("nameSearch", "");
 
 	const filteredUsers = data.filter((user) => {
-		const matchesRole = listRoles === "Todos" || user.role === listRoles;
+		const matchesRole = roles === "Todos" || user.role === roles;
 		const matchesName = `${user.first_name} ${user.last_name}`
 			.toLowerCase()
 			.includes(nameSearch.toLowerCase());
 
 		return matchesRole && matchesName;
 	});
-
-	const handleDeleteUser = () => {
-		console.log("hola");
-	};
 
 	const openEditModal = (user) => {
 		setEditUser(user);
@@ -69,7 +61,7 @@ export default function UsersTable() {
 			last_name: user.last_name,
 			email: user.email,
 			phone: user.phone,
-			role: user.role.name,
+			listRoles: user.role,
 		});
 	};
 
@@ -83,35 +75,43 @@ export default function UsersTable() {
 		setEditUser(null);
 	};
 
-	return (
-		<div className='p-8'>
-			<header className='flex flex-row items-center gap-6 mb-6'>
-				<label className='flex flex-col gap-1 w-60'>
-					Buscar por nombre
-					<input
-						id='nameSearch'
-						type='text'
-						placeholder='Kevin Tapia'
-						{...register("nameSearch")}
-						className='p-2 border rounded-md w-60'
-					/>
-				</label>
+	const handleDeleteUser = () => {
+		console.log("hola");
+	};
 
-				<ScrollableMenu
-					label='Seleccionar rol'
-					id='listRoles'
-					register={register}
-					endpoint={"/rol/get"}
-					includeAll={true}
-				/>
+	return (
+		<div className='m-8 p-8 h-full bg-white rounded-lg'>
+			<header className='flex flex-row items-center justify-between mb-5'>
+				<h1 className='text-2xl font-bold'>Administrar usuarios</h1>
+
+				<section className='flex gap-4'>
+					<label className='flex flex-col gap-1 w-60'>
+						Buscar por nombre
+						<input
+							id='nameSearch'
+							type='text'
+							placeholder='Kevin Tapia'
+							{...register("nameSearch")}
+							className='p-2 border rounded-md w-60'
+						/>
+					</label>
+
+					<ScrollableMenu
+						label='Seleccionar rol'
+						id='roles'
+						register={register}
+						endpoint={"/rol/get"}
+						includeAll={true}
+					/>
+				</section>
 			</header>
 
-			{loading || authenticated ? (
+			{loading ? (
 				<h1 className='text-center'>Cargando...</h1>
 			) : (
 				<main className='overflow-hidden rounded-md'>
 					<table className='w-full text-sm'>
-						<thead className='bg-neutral-800 text-neutral-100 uppercase'>
+						<thead className='bg-blue-400 text-blue-50 uppercase'>
 							<tr>
 								<th className='p-2 text-left'>Nombre</th>
 								<th className='p-2 text-left'>
@@ -128,7 +128,7 @@ export default function UsersTable() {
 							{filteredUsers.map((user) => (
 								<tr
 									key={user.id}
-									className='hover:bg-neutral-200'
+									className='hover:bg-neutral-50'
 								>
 									<td className='border-b border-neutral-800 p-2 text-left'>
 										<div className='flex items-center gap-2'>
@@ -152,20 +152,8 @@ export default function UsersTable() {
 												{user.role}
 											</span>
 											{user.name_institution ? (
-												<span className='text-xs text-blue-500 font-semibold'>
+												<span className='text-xs text-blue-400 font-semibold'>
 													{user.name_institution}
-												</span>
-											) : user.status_judge !== null ? (
-												<span
-													className={`text-xs font-semibold ${
-														user.status_judge
-															? "text-red-600"
-															: "text-green-600"
-													}`}
-												>
-													{user.status_judge
-														? "Ocupado"
-														: "Libre"}
 												</span>
 											) : null}
 										</div>
@@ -174,14 +162,14 @@ export default function UsersTable() {
 										<button
 											type='button'
 											onClick={() => openEditModal(user)}
-											className='bg-blue-400 text-neutral-100 rounded-md mr-3 p-1'
+											className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md mr-3 p-1'
 										>
 											<EditIcon />
 										</button>
 
 										<button
 											type='button'
-											className='bg-red-400 text-neutral-100 rounded-md p-1'
+											className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md p-1'
 										>
 											<DeleteIcon />
 										</button>
@@ -196,43 +184,45 @@ export default function UsersTable() {
 			<Modal
 				isOpen={editModal}
 				onClose={() => setEditModal(false)}
-				title='Editar'
+				title='Editar usuario'
 			>
 				<form
 					onSubmit={handleSubmit(saveEdit)}
-					className='flex flex-col gap-5'
+					className='flex flex-col gap-4'
 				>
-					<InputField
-						label='Nombre'
-						type='text'
-						id='first_name'
-						register={register}
-						errors={errors}
-					/>
+					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+						<InputField
+							label='Nombre'
+							type='text'
+							id='first_name'
+							register={register}
+							errors={errors}
+						/>
 
-					<InputField
-						label='Apellido'
-						type='text'
-						id='last_name'
-						register={register}
-						errors={errors}
-					/>
+						<InputField
+							label='Apellido'
+							type='text'
+							id='last_name'
+							register={register}
+							errors={errors}
+						/>
 
-					<InputField
-						label='Correo electrónico'
-						type='text'
-						id='email'
-						register={register}
-						errors={errors}
-					/>
+						<InputField
+							label='Correo electrónico'
+							type='text'
+							id='email'
+							register={register}
+							errors={errors}
+						/>
 
-					<InputField
-						label='Número de teléfono'
-						type='text'
-						id='phone'
-						register={register}
-						errors={errors}
-					/>
+						<InputField
+							label='Número de teléfono'
+							type='text'
+							id='phone'
+							register={register}
+							errors={errors}
+						/>
+					</div>
 
 					<ScrollableMenu
 						label='Seleccionar rol'
@@ -241,7 +231,10 @@ export default function UsersTable() {
 						endpoint={"/rol/get"}
 						includeAll={true}
 					/>
-					<Button type='submit'>Guardar</Button>
+
+					<Button type='submit' className='mt-3 w-full'>
+						Guardar
+					</Button>
 				</form>
 			</Modal>
 			<Toaster position='top-right' />

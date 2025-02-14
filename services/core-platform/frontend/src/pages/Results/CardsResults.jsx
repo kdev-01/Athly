@@ -10,45 +10,41 @@ const MatchList = () => {
 	const [venues, setVenues] = useState({});
 	const [selectedMatch, setSelectedMatch] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [showMatches, setShowMatches] = useState(true); // Nuevo estado para mostrar/ocultar partidos
 
-	// 🔄 Obtener la lista de instituciones
+	// 🔄 Obtener la lista de instituciones y escenarios (combinado en un solo useEffect)
 	useEffect(() => {
-		const fetchInstitutions = async () => {
+		const fetchData = async () => {
 			try {
-				const response = await axios.get(
-					`${API_BASE_URL}/institutions/`,
-				);
-				const mapping = {};
-				// biome-ignore lint/complexity/noForEach: <explanation>
-				response.data.forEach((institution) => {
-					mapping[institution.institution_id] = institution.name;
+				const [institutionsResponse, venuesResponse] = await axios.all([
+					axios.get(`${API_BASE_URL}/institutions/`),
+					axios.get(`${API_BASE_URL}/sports_venues/`),
+				]);
+
+				const institutionsMapping = {};
+				institutionsResponse.data.forEach((institution) => {
+					institutionsMapping[institution.institution_id] =
+						institution.name;
 				});
-				setInstitutions(mapping);
-				console.log("✅ Instituciones cargadas:", mapping);
+				setInstitutions(institutionsMapping);
+
+				const venuesMapping = {};
+				venuesResponse.data.forEach((venue) => {
+					venuesMapping[venue.venue_id] = venue.name;
+				});
+				setVenues(venuesMapping);
+
+				console.log(
+					"✅ Datos cargados:",
+					institutionsMapping,
+					venuesMapping,
+				);
 			} catch (error) {
-				console.error("❌ Error al cargar instituciones:", error);
+				console.error("❌ Error al cargar datos:", error);
 			}
 		};
 
-		const fetchVenues = async () => {
-			try {
-				const response = await axios.get(
-					`${API_BASE_URL}/sports_venues/`,
-				);
-				const mapping = {};
-				// biome-ignore lint/complexity/noForEach: <explanation>
-				response.data.forEach((venue) => {
-					mapping[venue.venue_id] = venue.name;
-				});
-				setVenues(mapping);
-				console.log("✅ Escenarios cargados:", mapping);
-			} catch (error) {
-				console.error("❌ Error al cargar escenarios:", error);
-			}
-		};
-
-		fetchInstitutions();
-		fetchVenues();
+		fetchData();
 	}, []);
 
 	// 🔄 Obtener la lista de encuentros
@@ -69,10 +65,21 @@ const MatchList = () => {
 		fetchMatches();
 	}, []);
 
+	const handleMatchClick = (match) => {
+		setSelectedMatch(match);
+		setShowMatches(false); // Ocultar los partidos
+	};
+
+	// Función para volver a la lista de partidos
+	const handleBackToMatches = () => {
+		setSelectedMatch(null);
+		setShowMatches(true); // Mostrar los partidos nuevamente
+	};
+
 	return (
 		<div className='p-6'>
 			<h2 className='text-2xl font-bold mb-4 text-center'>
-				📅 Encuentros Disponibles
+				Encuentros Disponibles
 			</h2>
 
 			{loading ? (
@@ -80,60 +87,58 @@ const MatchList = () => {
 					Cargando encuentros...
 				</p>
 			) : (
-				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-					{matches.map((match) => (
-						// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
-						<div
-							key={match.team_schedule_id}
-							className='bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all'
-							onClick={() => setSelectedMatch(match)}
-						>
-							<h3 className='text-lg font-semibold text-blue-700'>
-								⚔️{" "}
-								{institutions[match.institution_id1] ||
-									"Desconocido"}{" "}
-								vs{" "}
-								{institutions[match.institution_id2] ||
-									"Desconocido"}
-							</h3>
-							<p className='text-gray-600 mt-1'>
-								📅 {match.encounter_date.split("T")[0]}
-							</p>
-							<p className='text-gray-600'>
-								🧑‍⚖️ Juez: {match.judge_id}
-							</p>
-							<p className='text-gray-600'>
-								📍 Escenario:{" "}
-								{venues[match.venue_id] ||
-									"Escenario desconocido"}
-							</p>
-							<p className='text-gray-600'>
-								🧑ID_envento: {match.event_id}
-							</p>
-						</div>
-					))}
-				</div>
+				showMatches && ( // Mostrar partidos solo si showMatches es true
+					<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+						{matches.map((match) => (
+							<div
+								key={match.team_schedule_id}
+								className='bg-white p-4 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-all'
+								onClick={() => handleMatchClick(match)} // Usar la nueva función
+							>
+								<div className='border rounded-lg p-4'>
+									{" "}
+									{/* Tarjeta */}
+									<h3 className='text-lg font-semibold text-blue-700'>
+										⚔️{" "}
+										{institutions[match.institution_id1] ||
+											"Desconocido"}{" "}
+										vs{" "}
+										{institutions[match.institution_id2] ||
+											"Desconocido"}
+									</h3>
+									<p className='text-gray-600 mt-1'>
+										{match.encounter_date.split("T")[0]}
+									</p>
+									<p className='text-gray-600'>
+										‍⚖️ Juez: {match.judge_id}
+									</p>
+									<p className='text-gray-600'>
+										Escenario:{" "}
+										{venues[match.venue_id] ||
+											"Escenario desconocido"}
+									</p>
+									<p className='text-gray-600'>
+										🆔 Evento: {match.event_id}
+									</p>
+								</div>{" "}
+								{/* Fin de la tarjeta */}
+							</div>
+						))}
+					</div>
+				)
 			)}
 
-			{/* Mostrar el formulario cuando se selecciona un encuentro */}
+			{/* Mostrar el componente FootballResultsForm */}
 			{selectedMatch && (
-				<div className='fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4'>
-					<div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-2xl'>
-						<h2 className='text-xl font-bold mb-4 text-center'>
-							✍️ Ingresar Resultados
-						</h2>
-						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-						<button
-							onClick={() => setSelectedMatch(null)}
-							className='absolute top-4 right-4 text-gray-500 hover:text-red-600'
-						>
-							❌ Cerrar
-						</button>
-						<FootballResultsForm
-							teamA={institutions[selectedMatch.institution_id1]}
-							teamB={institutions[selectedMatch.institution_id2]}
-						/>
-					</div>
+				<div className='mt-8'>
+					<FootballResultsForm match={selectedMatch} />
+					{/* Botón para regresar a los partidos */}
+					<button
+						className='mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600'
+						onClick={handleBackToMatches}
+					>
+						Regresar a los partidos
+					</button>
 				</div>
 			)}
 		</div>

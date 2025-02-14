@@ -11,9 +11,11 @@ export default function Modal({
 
 	return (
 		<div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center'>
-			<div className={`bg-neutral-100 p-7 rounded ${className}`}>
+			<div
+				className={`bg-neutral-100 p-7 rounded max-h-[80vh] overflow-auto ${className}`}
+			>
 				<div className='flex justify-between items-center mb-4'>
-					<h2 className='text-xl font-bold mb-6'>{title}</h2>
+					<h2 className='text-xl font-bold mb-3'>{title}</h2>
 					<button
 						type='button'
 						onClick={onClose}

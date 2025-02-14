@@ -18,7 +18,9 @@ from src.api.routes.institutions import router as institutions_router
 from src.api.routes.venue_event import router as venue_event_router
 from src.api.routes.judge import router as judge_router
 from src.api.routes.team_schedule import router as team_schedule_router
-
+from src.api.routes import genders
+from src.api.routes.student import router as students_router
+from src.api.routes.representatives import router as representatives_router
 
 app = FastAPI(
     title = settings.PROJECT_NAME,
@@ -60,3 +62,6 @@ app.include_router(institutions_router, prefix="/api/institutions", tags=["Insti
 app.include_router(venue_event_router, prefix="/api/venue_event", tags=["Venues Event"])
 app.include_router(judge_router, prefix="/api/judges", tags=["Jugde"])
 app.include_router(team_schedule_router, prefix="/api/team_schedule", tags=["Team schedule"])
+app.include_router(genders.router, prefix='/gender', tags=['Genders'])
+app.include_router(students_router, prefix="/api/students", tags=["Students"])
+app.include_router(representatives_router, prefix="/api/students", tags=["Students"])

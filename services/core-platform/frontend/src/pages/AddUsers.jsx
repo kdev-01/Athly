@@ -10,7 +10,6 @@ import Button from "../components/Button";
 import DeleteIcon from "../components/Icons/DeleteIcon";
 import EditIcon from "../components/Icons/EditIcon";
 
-
 export default function AddUsers() {
 	const {
 		register,
@@ -103,49 +102,52 @@ export default function AddUsers() {
 	};
 
 	return (
-		<div className='min-h-screen bg-gray-100 p-6 flex justify-center items-start space-x-6'>
-			<section className='bg-white shadow-md rounded-lg p-10 w-1/3'>
-				<h2 className='text-xl font-bold mb-4'>Agregar Usuario</h2>
+		<div className='m-8 p-8 h-full bg-white rounded-lg'>
+			<header className='mb-5 p-5 bg-neutral-100 rounded-xl'>
 				<form
 					onSubmit={handleSubmit(handleAddUser)}
 					className='flex flex-col gap-4'
 				>
-					<InputField
-						label='Correo electrónico'
-						type='text'
-						id='email'
-						register={register}
-						errors={errors}
-					/>
+					<section className='flex items-center justify-between'>
+						<h1 className='text-2xl font-bold'>Agregar usuarios</h1>
 
-					<ScrollableMenu
-						label='Seleccionar rol'
-						id='role_name'
-						register={register}
-						errors={errors}
-						endpoint={"/rol/get"}
-					/>
+						<Button type='submit'>Agregar</Button>
+					</section>
 
-					{selectedRole === "Institución educativa" && (
-						<ScrollableMenu
-							label='Seleccionar la institución educativa'
-							id='institution_name'
+					<section className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+						<InputField
+							label='Correo electrónico'
+							placeholder='kevin@gmail.com'
+							type='text'
+							id='email'
 							register={register}
 							errors={errors}
-							endpoint={"/edu/get"}
 						/>
-					)}
 
-					<Button type='submit' className='mt-4'>
-						Agregar
-					</Button>
+						<ScrollableMenu
+							label='Seleccionar rol'
+							id='role_name'
+							register={register}
+							errors={errors}
+							endpoint={"/rol/get"}
+						/>
+
+						{selectedRole === "Institución educativa" && (
+							<ScrollableMenu
+								label='Seleccionar la institución educativa'
+								id='institution_name'
+								register={register}
+								errors={errors}
+								endpoint={"/edu/get"}
+							/>
+						)}
+					</section>
 				</form>
-			</section>
+			</header>
 
-			<section className='flex flex-col bg-white shadow-md rounded-lg p-6 w-2/3'>
-				<h2 className='text-xl font-bold mb-4'>Usuarios Agregados</h2>
+			<main className='overflow-hidden rounded-md'>
 				<table className='w-full text-sm'>
-					<thead className='bg-neutral-800 text-neutral-100 uppercase'>
+					<thead className='bg-blue-400 text-blue-50 uppercase'>
 						<tr>
 							<th className='p-2 text-left'>Correo</th>
 							<th className='p-2 text-left'>Rol</th>
@@ -185,14 +187,15 @@ export default function AddUsers() {
 						))}
 					</tbody>
 				</table>
+
 				<Button
 					type='button'
 					onClick={handleSendUsers}
-					className='mt-20'
+					className='mt-5 w-full'
 				>
 					Enviar accesos
 				</Button>
-			</section>
+			</main>
 
 			<Toaster position='top-right' />
 		</div>

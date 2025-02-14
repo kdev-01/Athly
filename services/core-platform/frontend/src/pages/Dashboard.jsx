@@ -7,17 +7,21 @@ import HomeIcon from "../components/Icons/HomeIcon";
 import ManageUsersIcon from "../components/Icons/ManageUsersIcon";
 import AddUsersIcon from "../components/Icons/AddUsersIcon";
 import ManageEnrollmentsIcon from "../components/Icons/ManageEnrollmentsIcon";
+import ListStudents from "../components/Icons/ListStudents";
+import SettingsIcon from "../components/Icons/SettingsIcon";
 
 const icons = {
 	HomeIcon: HomeIcon,
 	ManageUsersIcon: ManageUsersIcon,
 	AddUsersIcon: AddUsersIcon,
 	ManageEnrollmentsIcon: ManageEnrollmentsIcon,
+	ListStudents: ListStudents,
+	SettingsIcon: SettingsIcon,
 };
 
 export default function Dashboard() {
 	const [actions, setActions] = useState(null);
-	const { getRequest } = useFetch();
+	const { data, getRequest } = useFetch();
 
 	useEffect(() => {
 		const getUserActions = async () => {
@@ -52,7 +56,7 @@ export default function Dashboard() {
 					<li>
 						<NavLink
 							to=''
-							className='flex gap-3 px-4 py-2 rounded-lg'
+							className='flex items-center gap-2 px-4 py-2 text-sm rounded-lg'
 						>
 							<HomeIcon />
 							Home
@@ -66,10 +70,10 @@ export default function Dashboard() {
 								<NavLink
 									to={action.href}
 									className={({ isActive }) =>
-										`flex gap-3 px-4 py-2 rounded-lg ${
+										`flex items-center gap-2 px-4 py-2 text-sm rounded-lg ${
 											isActive
-												? "text-blue-500"
-												: "hover:text-blue-500"
+												? "text-blue-400"
+												: "hover:text-blue-400"
 										}`
 									}
 								>
