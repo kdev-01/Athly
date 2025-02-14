@@ -150,7 +150,7 @@ function WorkShop({ event }) {
 	};
 
 	return (
-		<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
+		<div className='mt-6 shadow-md p-6 rounded-lg shadow-inner'>
 			<h2 className='text-xl font-bold mb-4'>CONGRESILLO TÉCNICO</h2>
 			{workshop ? (
 				<>

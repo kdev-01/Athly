@@ -33,7 +33,7 @@ const EventDetails = ({ event }) => {
 	return (
 		<div className='bg-white p-6 rounded-lg shadow-md'>
 			{/* Sección: Detalles del Evento */}
-			<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
+			<div className='mt-6 p-6 rounded-lg shadow-md'>
 				<h2 className='text-xl font-bold mb-4'>DETALLES DEL EVENTO</h2>
 				<p>
 					<strong>Nombre:</strong> {event.name}
