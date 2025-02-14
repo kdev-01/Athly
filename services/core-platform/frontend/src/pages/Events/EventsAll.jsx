@@ -23,19 +23,19 @@ const EventsAll = () => {
 	};
 
 	const handleOpenModal = () => {
-		setIsModalOpen(true); // Abrir el modal
+		setIsModalOpen(true);
 	};
 
 	const handleCloseModal = () => {
-		setIsModalOpen(false); // Cerrar el modal
+		setIsModalOpen(false);
 	};
 
 	const handleEventClick = (event) => {
-		setSelectedEvent(event); // Establecer el evento seleccionado
+		setSelectedEvent(event);
 	};
 
 	const handleBackToList = () => {
-		setSelectedEvent(null); // Volver al listado de eventos
+		setSelectedEvent(null);
 	};
 
 	return (
@@ -59,8 +59,8 @@ const EventsAll = () => {
 			{/* Detalles del Evento o Tarjetas */}
 			{selectedEvent ? (
 				<div>
+					{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 					<button
-						type='button'
 						onClick={handleBackToList}
 						className='mb-4 bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-600'
 					>
@@ -110,8 +110,8 @@ const EventsAll = () => {
 						style={{ maxHeight: "90vh", overflowY: "auto" }}
 					>
 						<div className='flex justify-end'>
+							{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 							<button
-								type='button'
 								onClick={handleCloseModal}
 								className='text-gray-600 text-2xl hover:text-gray-800'
 							>

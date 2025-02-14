@@ -14,8 +14,9 @@ import AddUsers from "./pages/AddUsers";
 import ListEvents from "./pages/ListEvents";
 import ManageEnrollments from "./pages/ManageEnrollments";
 import EventsAll from "./pages/Events/EventsAll";
-import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
 import ListEnrolledStudents from "./pages/ListEnrolledStudents";
+import CardResults from "./pages/Results/CardsResults";
+import Result from "./pages/Results/CardsResults";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -29,8 +30,6 @@ export default function App() {
 
 		verifyAuthentication();
 	}, []);
-
-	if (loading) return <div className='text-center'>Cargando...</div>;
 
 	return (
 		<BrowserRouter>
@@ -69,6 +68,7 @@ export default function App() {
 							path='list/students'
 							element={<ListEnrolledStudents />}
 						/>
+						<Route path='results' element={<Result />} />
 					</Route>
 				</Route>
 			</Routes>

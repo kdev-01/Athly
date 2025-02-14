@@ -251,7 +251,8 @@ class UserService:
             return {
                 "profile": user_profile,
                 "actions": [
-                    { "href": "/", "label": "Home", "icon": "" }
+                    { "href": "/", "label": "Home", "icon": "" },
+                    { "href": "results", "label": "Registrar Reultados", "icon": "AddUsersIcon" },
                 ]
             }
         

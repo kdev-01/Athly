@@ -10,4 +10,3 @@ class Sport(Base):
 
     events = relationship("Event", back_populates="sport")  # Relación con eventos
     venues = relationship("SportsVenue", back_populates="sport")
-    disciplines = relationship("Discipline", back_populates="sport")

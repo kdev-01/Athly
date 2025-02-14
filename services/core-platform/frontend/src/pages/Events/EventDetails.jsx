@@ -1,272 +1,124 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Calendar from "../../components/Events/Calendar";
+import CalendarFutbolBasket from "../../components/Events/CalendarFutbolBasket";
+import DeleteIcon from "../../components/Icons/DeleteIcon";
+import EditIcon from "../../components/Icons/EditIcon";
+import WorkShop from "../../components/Events/WorkShops";
+import InstitutionsAndVenues from "../../components/Events/InstitutionsAndVenues";
+import FormEvent from "../../components/Events/FormEvent";
 
 const EventDetails = ({ event }) => {
-	const [workshop, setWorkshop] = useState(null);
-	const [institutions, setInstitutions] = useState([]);
-	const [allInstitutions, setAllInstitutions] = useState([]);
-	const [venues, setVenues] = useState([]);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	useEffect(() => {
-		// Cargar workshops y buscar el relacionado al evento
-		axios
-			.get("http://localhost:8000/api/workshops")
-			.then((response) => {
-				const relatedWorkshop = response.data.find(
-					(ws) => ws.event_id === event.event_id,
-				);
-				setWorkshop(relatedWorkshop);
-			})
-			.catch((error) =>
-				console.error(
-					"Error al cargar los congresillos técnicos:",
-					error,
-				),
-			);
-
-		// Cargar instituciones educativas relacionadas al evento
-		axios
-			.get("http://localhost:8000/api/event_participants")
-			.then((participantsResponse) => {
-				const participantInstitutions = participantsResponse.data
-					.filter(
-						(participant) =>
-							participant.id_event === event.event_id,
-					)
-					.map(
-						(participant) => participant.id_educational_institution,
-					);
-
-				axios
-					.get("http://localhost:8000/api/institutions")
-					.then((institutionsResponse) => {
-						const relatedInstitutions =
-							institutionsResponse.data.filter((institution) =>
-								participantInstitutions.includes(
-									institution.institution_id,
-								),
-							);
-						setInstitutions(relatedInstitutions);
-					})
-					.catch((error) =>
-						console.error(
-							"Error al cargar las instituciones:",
-							error,
-						),
-					);
-			})
-			.catch((error) =>
-				console.error(
-					"Error al cargar los participantes del evento:",
-					error,
-				),
-			);
-
-		// Cargar todas las instituciones disponibles
-		axios
-			.get("http://localhost:8000/api/institutions")
-			.then((response) => {
-				setAllInstitutions(response.data);
-			})
-			.catch((error) =>
-				console.error(
-					"Error al cargar todas las instituciones:",
-					error,
-				),
-			);
-
-		// Cargar escenarios deportivos relacionados al evento
-		axios
-			.get("http://localhost:8000/api/venue_event")
-			.then((venuesResponse) => {
-				const relatedVenues = venuesResponse.data
-					.filter(
-						(venueEvent) => venueEvent.id_event === event.event_id,
-					)
-					.map((venueEvent) => venueEvent.id_venue);
-
-				axios
-					.get("http://localhost:8000/api/sports_venues")
-					.then((venuesData) => {
-						const venuesList = venuesData.data.filter((venue) =>
-							relatedVenues.includes(venue.venue_id),
-						);
-						setVenues(venuesList);
-					})
-					.catch((error) =>
-						console.error(
-							"Error al cargar los escenarios deportivos:",
-							error,
-						),
-					);
-			})
-			.catch((error) =>
-				console.error(
-					"Error al cargar la relación de escenarios:",
-					error,
-				),
-			);
-	}, [event.event_id]);
-
-	// Función para agregar una institución al evento
-	const addInstitutionToEvent = async () => {
-		const selectElement = document.getElementById("institutionSelect");
-		const selectedInstitutionId = selectElement.value;
-
-		if (!selectedInstitutionId) {
-			alert("Selecciona una institución para agregar.");
-			return;
-		}
-
-		try {
-			const response = await axios.post(
-				"http://localhost:8000/api/event_participants/",
-				{
-					id_event: event.event_id,
-					id_educational_institution: selectedInstitutionId,
-				},
-			);
-
-			if (response.status === 201 || response.status === 200) {
-				const addedInstitution = allInstitutions.find(
-					(inst) =>
-						inst.institution_id ===
-						Number.parseInt(selectedInstitutionId),
-				);
-
-				setInstitutions([...institutions, addedInstitution]);
-				selectElement.value = "";
-			} else {
-				console.error("Error al agregar la institución:", response);
-			}
-		} catch (error) {
-			console.error("Error al conectar con la API:", error);
-			alert(
-				error.response?.data?.detail ||
-					"Error al agregar la institución.",
-			);
-		}
+	const handleEdit = () => {
+		setIsModalOpen(true);
 	};
 
-	// Función para eliminar una institución del evento
-	const removeInstitutionFromEvent = async (institutionId) => {
-		const confirmDelete = window.confirm(
-			"¿Estás seguro de que deseas eliminar esta institución?",
-		);
-		if (!confirmDelete) return;
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
 
-		try {
-			const response = await axios.delete(
-				`http://localhost:8000/api/event_participants/${event.event_id}/${institutionId}`,
-			);
+	// Función para verificar si la fecha de inicio del evento es mayor a la fecha actual
+	const isEventStartDateInFuture = () => {
+		const currentDate = new Date(); // Fecha actual
+		const eventStartDate = new Date(event.start_date); // Fecha de inicio del evento
+		return eventStartDate > currentDate; // Devuelve true si la fecha de inicio es futura
+	};
 
-			if (response.status === 200) {
-				setInstitutions(
-					institutions.filter(
-						(inst) => inst.institution_id !== institutionId,
-					),
-				);
-			} else {
-				console.error("Error al eliminar la institución:", response);
-			}
-		} catch (error) {
-			console.error("Error al conectar con la API:", error);
-			alert(
-				error.response?.data?.detail ||
-					"Error al eliminar la institución.",
-			);
-		}
+	// Función para manejar el borrado del evento
+	const handleDelete = () => {
+		// Lógica para borrar el evento (puedes implementar una llamada a la API aquí)
+		console.log("Evento borrado");
 	};
 
 	return (
 		<div className='bg-white p-6 rounded-lg shadow-md'>
-			{/* Título principal */}
-			<div className='bg-black text-white text-center font-bold py-3 rounded-t-lg'>
-				DETALLES DEL EVENTO
-			</div>
+			{/* Sección: Detalles del Evento */}
+			<div className='mt-6 p-6 rounded-lg shadow-md'>
+				<h2 className='text-xl font-bold mb-4'>DETALLES DEL EVENTO</h2>
+				<p>
+					<strong>Nombre:</strong> {event.name}
+				</p>
+				<p>
+					<strong>Fecha de Inicio:</strong> {event.start_date}
+				</p>
+				<p>
+					<strong>Fecha de Fin:</strong> {event.end_date}
+				</p>
+				<p>
+					<strong>Registro Inicio:</strong>{" "}
+					{event.registration_start_date}
+				</p>
+				<p>
+					<strong>Registro Fin:</strong> {event.registration_end_date}
+				</p>
+				<p>
+					<strong>Deporte:</strong> {event.sport.name}
+				</p>
+				<p>
+					<strong>Categoría:</strong> {event.category.name}
+				</p>
 
-			{/* Instituciones Educativas Participantes */}
-			<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
-				<h2 className='text-xl font-bold mb-4'>
-					INSTITUCIONES EDUCATIVAS PARTICIPANTES
-				</h2>
-				{institutions.length > 0 ? (
-					<ul>
-						{institutions.map((institution) => (
-							<li
-								key={institution.institution_id}
-								className='mb-2 flex items-center gap-2'
-							>
-								{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-								<button
-									className='px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-800'
-									onClick={() =>
-										removeInstitutionFromEvent(
-											institution.institution_id,
-										)
-									}
-								>
-									Eliminar
-								</button>
-								<p>{institution.name}</p>
-							</li>
-						))}
-					</ul>
-				) : (
-					<p className='text-gray-600'>
-						No hay instituciones educativas participantes en este
-						evento.
-					</p>
+				{/* Botones de Borrar y Editar (solo si la fecha de inicio es futura) */}
+				{isEventStartDateInFuture() && (
+					<div className='flex gap-2 mt-4'>
+						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+						<button
+							className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md p-1'
+							onClick={handleEdit}
+						>
+							<EditIcon />
+						</button>
+					</div>
 				)}
 
-				{/* Listbox desplegable para agregar una nueva institución */}
-				<div className='flex gap-2 mt-4'>
-					<select
-						id='institutionSelect'
-						className='flex-1 p-2 border border-gray-300 rounded-lg'
+				{/* Modal */}
+				{isModalOpen && (
+					<div
+						style={{
+							position: "fixed",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							zIndex: 1000,
+						}}
 					>
-						<option value=''>
-							Seleccionar institución para agregar
-						</option>
-						{allInstitutions
-							.filter(
-								(institution) =>
-									!institutions.some(
-										(inst) =>
-											inst.institution_id ===
-											institution.institution_id,
-									),
-							)
-							.map((institution) => (
-								<option
-									key={institution.institution_id}
-									value={institution.institution_id}
-								>
-									{institution.name}
-								</option>
-							))}
-					</select>
-					{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-					<button
-						className='px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-700'
-						onClick={addInstitutionToEvent}
-					>
-						Agregar
-					</button>
-				</div>
+						<div
+							style={{
+								backgroundColor: "#fff",
+								padding: "20px",
+								borderRadius: "8px",
+								boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+							}}
+						>
+							<FormEvent
+								onEventCreated={() => {
+									closeModal();
+									// Recargar los detalles del evento o actualizar el estado con los nuevos datos
+								}}
+								eventToEdit={event}
+							/>
+							{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+							<button onClick={closeModal}>Cerrar</button>{" "}
+							{/* Botón para cerrar el modal */}
+						</div>
+					</div>
+				)}
 			</div>
-
-			{/* Calendario de Encuentros */}
+			{/* Sección: Congresillo Técnico */}
+			<WorkShop event={event} />
+			{/* Sección: Instituciones y Escenarios Participantes */}
+			<InstitutionsAndVenues event={event} />
+			{/* Sección: Calendario de Encuentros */}
 			<div className='mt-6 bg-gray-100 p-6 rounded-lg shadow-inner'>
 				<h2 className='text-xl font-bold mb-4'>
 					CALENDARIO DE ENCUENTROS
 				</h2>
-				<Calendar
-					teams={institutions.map((institution) => institution.name)}
-					scenarios={venues}
-					startDate={event.start_date}
-				/>
+				<CalendarFutbolBasket event={event} />
 			</div>
 		</div>
 	);
