@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import CalendarFutbolBasket from "../../components/Events/CalendarFutbolBasket";
 import DeleteIcon from "../../components/Icons/DeleteIcon";
 import EditIcon from "../../components/Icons/EditIcon";
 import WorkShop from "../../components/Events/WorkShops";
 import InstitutionsAndVenues from "../../components/Events/InstitutionsAndVenues";
+import FormEvent from "../../components/Events/FormEvent";
 
 const EventDetails = ({ event }) => {
-	// Estados para almacenar datos relacionados con el evento
-	const [institutions, setInstitutions] = useState([]); // Instituciones participantes
-	const [allInstitutions, setAllInstitutions] = useState([]); // Todas las instituciones disponibles
-	const [venues, setVenues] = useState([]); // Escenarios deportivos participantes
-	const [allVenues, setAllVenues] = useState([]); // Todos los escenarios disponibles
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const handleEdit = () => {
+		setIsModalOpen(true);
+	};
+
+	const closeModal = () => {
+		setIsModalOpen(false);
+	};
 
 	// Función para verificar si la fecha de inicio del evento es mayor a la fecha actual
 	const isEventStartDateInFuture = () => {
@@ -25,20 +29,6 @@ const EventDetails = ({ event }) => {
 		// Lógica para borrar el evento (puedes implementar una llamada a la API aquí)
 		console.log("Evento borrado");
 	};
-
-	// Función para manejar la edición del evento
-	const handleEdit = () => {
-		// Lógica para editar el evento (puedes implementar una llamada a la API aquí)
-		console.log("Evento editado");
-	};
-
-	const judges = [
-		{ id: 4, name: "Carlos Fernández" },
-		{ id: 5, name: "María Gómez" },
-		{ id: 6, name: "Jorge Martínez" },
-		{ id: 7, name: "Luisa Pérez" },
-		{ id: 8, name: "Fernando Chávez" },
-	];
 
 	return (
 		<div className='bg-white p-6 rounded-lg shadow-md'>
@@ -74,17 +64,48 @@ const EventDetails = ({ event }) => {
 						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 						<button
 							className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md p-1'
-							onClick={handleDelete}
-						>
-							<DeleteIcon />
-						</button>
-						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
-						<button
-							className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md p-1'
 							onClick={handleEdit}
 						>
 							<EditIcon />
 						</button>
+					</div>
+				)}
+
+				{/* Modal */}
+				{isModalOpen && (
+					<div
+						style={{
+							position: "fixed",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							display: "flex",
+							justifyContent: "center",
+							alignItems: "center",
+							zIndex: 1000,
+						}}
+					>
+						<div
+							style={{
+								backgroundColor: "#fff",
+								padding: "20px",
+								borderRadius: "8px",
+								boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+							}}
+						>
+							<FormEvent
+								onEventCreated={() => {
+									closeModal();
+									// Recargar los detalles del evento o actualizar el estado con los nuevos datos
+								}}
+								eventToEdit={event}
+							/>
+							{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
+							<button onClick={closeModal}>Cerrar</button>{" "}
+							{/* Botón para cerrar el modal */}
+						</div>
 					</div>
 				)}
 			</div>
