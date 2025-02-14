@@ -3,13 +3,17 @@ import { Toaster, toast } from "sonner";
 import { useFetch } from "../hooks/useFetch";
 import { formattedDate } from "../utils/operationsDates";
 import { getImage, getColors, getColorTitle } from "../utils/getStyles";
+import Modal from "../components/Modal";
 import ListStudents from "../components/ListStudents";
+import Button from "../components/Button";
 import ArrowLeftIcon from "../components/Icons/ArrowLeftIcon";
+import PdfCarnets from "../components/PdfCarnets";
 
 export default function ManageEnrollments() {
+	const [modal, setModal] = useState(false);
 	const [moreInfo, setMoreInfo] = useState(null);
 	const [selectedSport, setSelectedSport] = useState("");
-	const { data, loading, error, getRequest } = useFetch();
+	const { data, setData, loading, error, getRequest } = useFetch();
 	const today = new Date();
 
 	useEffect(() => {
@@ -38,6 +42,50 @@ export default function ManageEnrollments() {
 		? data.filter((event) => event.sport.name === selectedSport)
 		: data;
 
+	const updateStudent = (updatedStudent) => {
+		setData((prevEvents) => {
+			const newEvents = prevEvents.map((event) =>
+				event.event_id === moreInfo.event_id
+					? {
+							...event,
+							institutions: event.institutions.map(
+								(institution) => ({
+									...institution,
+									students: institution.students.map(
+										(student) =>
+											student.id === updatedStudent.id
+												? {
+														...student,
+														...updatedStudent,
+													}
+												: student,
+									),
+								}),
+							),
+						}
+					: event,
+			);
+			const updatedEvent = newEvents.find(
+				(event) => event.event_id === moreInfo.event_id,
+			);
+			setMoreInfo(updatedEvent);
+
+			return newEvents;
+		});
+	};
+
+	const openModal = () => {
+		setModal(true);
+	};
+
+	const closeModal = () => {
+		setModal(false);
+	};
+
+	const handleViewCarnets = () => {
+		openModal();
+	};
+
 	return (
 		<>
 			<main className='m-8 p-8 bg-white rounded-lg'>
@@ -54,8 +102,20 @@ export default function ManageEnrollments() {
 								Regresar
 							</span>
 						</button>
-						<ListStudents data={moreInfo} />
+						<ListStudents
+							data={moreInfo}
+							updateStudent={updateStudent}
+						/>
 					</>
+				) : modal ? (
+					<Modal
+						isOpen={modal}
+						onClose={closeModal}
+						title='Carnets de estudiantes'
+						className='w-5/6'
+					>
+						<PdfCarnets event={data} />
+					</Modal>
 				) : (
 					<>
 						<section className='flex justify-between items-center'>
@@ -63,25 +123,31 @@ export default function ManageEnrollments() {
 								Inscripciones realizadas
 							</h1>
 
-							<label className='block mb-4'>
-								<span className='text-gray-700'>
-									Filtrar por deporte:
-								</span>
-								<select
-									value={selectedSport}
-									onChange={(e) =>
-										setSelectedSport(e.target.value)
-									}
-									className='block w-full mt-1 p-2 border border-gray-300 rounded-md'
-								>
-									<option value=''>Todos</option>
-									{uniqueSports.map((sport) => (
-										<option key={sport} value={sport}>
-											{sport}
-										</option>
-									))}
-								</select>
-							</label>
+							<div className='flex gap-5 items-center'>
+								<label className='block mb-4'>
+									<span className='text-gray-700'>
+										Filtrar por deporte:
+									</span>
+									<select
+										value={selectedSport}
+										onChange={(e) =>
+											setSelectedSport(e.target.value)
+										}
+										className='block w-full mt-1 p-2 border border-gray-300 rounded-md'
+									>
+										<option value=''>Todos</option>
+										{uniqueSports.map((sport) => (
+											<option key={sport} value={sport}>
+												{sport}
+											</option>
+										))}
+									</select>
+								</label>
+
+								<Button onClick={handleViewCarnets}>
+									Ver carnets
+								</Button>
+							</div>
 						</section>
 
 						<section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6'>
@@ -107,9 +173,7 @@ export default function ManageEnrollments() {
 									onClick={() => handleCardClick(event)}
 								>
 									<span
-										className={`absolute right-6 p-2 rounded-xl text-xs font-extrabold ${getColors(
-											event.sport.name,
-										)}`}
+										className={`absolute right-6 p-2 rounded-xl text-xs font-extrabold ${getColors(event.sport.name)}`}
 									>
 										{(() => {
 											const remainingDays =
@@ -136,8 +200,8 @@ export default function ManageEnrollments() {
 										{formattedDate(
 											"custom",
 											event.start_date,
-										)}
-										{" / "}
+										)}{" "}
+										/{" "}
 										{formattedDate(
 											"custom",
 											event.end_date,
@@ -149,12 +213,9 @@ export default function ManageEnrollments() {
 									</h2>
 
 									<p
-										className={`text-sm mb-3 ${getColorTitle(
-											event.sport.name,
-										)}`}
+										className={`text-sm mb-3 ${getColorTitle(event.sport.name)}`}
 									>
-										{event.sport.name}
-										{" / "}
+										{event.sport.name} /{" "}
 										{event.category.name}
 									</p>
 

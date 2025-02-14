@@ -1,7 +1,7 @@
 from pathlib import Path
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from typing import Dict, List
+from typing import Dict, List, Optional
 from src.services.auth_service import AuthService
 from src.services.email_service import EmailService
 from src.crud.user import UserCRUD
@@ -139,7 +139,76 @@ class UserService:
         user.phone = phone
 
         UserCRUD.update_data_user(db, user)
-    
+
+    @staticmethod
+    def delete_data(
+        user_id: int,
+        db: Session
+    ):
+        user = UserCRUD.get_user_by_id(db, user_id)
+
+        if not user:
+            raise HTTPException(status_code=403, detail="Usuario no encontrado o ya eliminado.")
+        
+        if user.role.name == "Institución educativa":
+            representative = RepresentativeCRUD.get_representative_by_id(db, user_id)
+
+            if representative:
+                institution_id = representative.institution_id
+                replacement = RepresentativeCRUD.exists_replacement(db, institution_id, user_id)
+
+                if not replacement:
+                    raise HTTPException(status_code=403, detail="No se puede eliminar, ya que no hay un reemplazo para esta institución.")
+                
+                representative.is_deleted = True
+                RepresentativeCRUD.update_representative(db, representative)
+        elif user.role.name == "Administrador":
+            replacement = UserCRUD.exists_replacement(db, user_id)
+
+            if not replacement:
+                raise HTTPException(status_code=403, detail="No se puede eliminar, ya que no hay un reemplazo en el sistema.")
+        
+        elif user.role.name == "Juez":
+            judge = JudgeCrud.get_judge_by_id(db, user_id)
+
+            if judge:
+                has_individual_events = JudgeCrud.verify_has_individual_events(db, judge.judge_id)
+                has_team_events = JudgeCrud.verify_has_team_events(db, judge.judge_id)
+
+                if has_individual_events or has_team_events:
+                    
+                    raise HTTPException(status_code=403, detail="No se puede eliminar porque el juez tiene eventos asignados.")
+                judge.is_deleted = True
+                JudgeCrud.update_data_judge(db, judge)
+        user.is_deleted = True
+        UserCRUD.update_data_user(db, user)
+
+    @staticmethod
+    def update_data(
+        user_id: int,
+        first_name: Optional[str],
+        last_name: Optional[str],
+        phone: Optional[str],
+        email: Optional[str],
+        db: Session
+    ):
+        user = UserCRUD.get_user_by_id(db, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+        
+        if first_name is not None:
+            user.first_name = first_name
+        if last_name is not None:
+            user.last_name = last_name
+        if phone is not None:
+            user.phone = phone
+        if email is not None:
+            user.email = email
+
+        UserCRUD.update_data_user(db, user)
+
+        return user
+
     @staticmethod
     def get_actions(
         user: dict,
@@ -163,7 +232,6 @@ class UserService:
                     { "href": "enrollments/students", "label": "Gestionar inscripciones", "icon": "ManageEnrollmentsIcon" },
                     { "href": "institucions", "label": "Instituciones Educativas", "icon": "AddUsersIcon" },
                     { "href": "venues", "label": "Escenarios Deportivos", "icon": "AddUsersIcon" },
-                    { "href": "settings", "label": "Ajustes", "icon": "SettingsIcon" }
                 ]
             }
         

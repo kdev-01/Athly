@@ -23,8 +23,6 @@ app = FastAPI(
     version = settings.PROJECT_VERSION
 )
 
-app.mount("/images", StaticFiles(directory="images"), name="images")
-
 @app.exception_handler(HTTPException)
 async def custom_http_exception_handler(request, exc: HTTPException):
     return JSONResponse(
@@ -39,6 +37,8 @@ app.add_middleware (
     allow_methods = ['*'],
     allow_headers = ['*']
 )
+
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 @app.get('/', tags=['Home'])
 def home():

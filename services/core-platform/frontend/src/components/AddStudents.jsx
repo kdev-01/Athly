@@ -102,28 +102,19 @@ export default function AddStudents({ data }) {
 						{formattedDate("custom", data.end_date)}
 					</div>
 
-					{data.sport.name !== "Atletismo" &&
-						data.sport.name !== "Ajedrez" && (
-							<>
-								<div className='text-xs'>
-									<h2
-										className={`font-medium text-sm ${titleColor}`}
-									>
-										Max. jugadores
-									</h2>
-									{data.sport.name === "Fútbol" ? "15" : "12"}
-								</div>
+					<div className='text-xs'>
+						<h2 className={`font-medium text-sm ${titleColor}`}>
+							Max. jugadores
+						</h2>
+						{data.max_players}
+					</div>
 
-								<div className='text-xs'>
-									<h2
-										className={`font-medium text-sm ${titleColor}`}
-									>
-										Min. jugadores
-									</h2>
-									{data.sport.name === "Fútbol" ? "11" : "5"}
-								</div>
-							</>
-						)}
+					<div className='text-xs'>
+						<h2 className={`font-medium text-sm ${titleColor}`}>
+							Min. jugadores
+						</h2>
+						{data.min_players}
+					</div>
 				</section>
 			</header>
 

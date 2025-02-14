@@ -84,7 +84,7 @@ def update_student(
     validate_name(student_data.surnames)
     validate_blood_type(student_data.blood_type)
 
-    StudentService.update_information_student(
+    result = StudentService.update_information_student(
         student_data.identification,
         student_data.names,
         student_data.surnames,
@@ -98,7 +98,8 @@ def update_student(
     response = JSONResponse(
         content=standard_response(
             success=True,
-            message="La información se actualizo con éxito."
+            message="La información se actualizo con éxito.",
+            data=result
         )
     )
 
@@ -143,7 +144,7 @@ def set_registration_student(
             detail="Para el estado 'Rechazado', se requiere una descripción."
         )
 
-    StudentService.update_registration_student(
+    result = StudentService.update_registration_student(
         registration_data.identification,
         registration_data.student_id,
         registration_data.id_event,
@@ -155,7 +156,8 @@ def set_registration_student(
     response = JSONResponse(
         content=standard_response(
             success=True,
-            message="El estudiante ahora se encuentra inscrito en el evento."
+            message="Se han guardado los cambios con éxito.",
+            data=result
         )
     )
 

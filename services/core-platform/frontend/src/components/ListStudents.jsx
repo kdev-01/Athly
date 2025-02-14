@@ -13,7 +13,7 @@ import TimeIcon from "../components/Icons/TimeIcon";
 import BoyIcon from "../components/Icons/BoyIcon";
 import WomanIcon from "../components/Icons/WomanIcon";
 
-export default function ListStudents({ data }) {
+export default function ListStudents({ data, updateStudent }) {
 	const [modal, setModal] = useState(false);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [action, setAction] = useState(null);
@@ -48,6 +48,7 @@ export default function ListStudents({ data }) {
 						loading: "Cargando...",
 						success: (data) => {
 							if (data.success) {
+								updateStudent(data.data);
 								return data.message;
 							}
 
@@ -70,7 +71,7 @@ export default function ListStudents({ data }) {
 						<Modal
 							isOpen={modal}
 							onClose={closeModal}
-							title='Estudiante'
+							title='Información del estudiante'
 							className='w-2/3 h-auto'
 						>
 							{action === "see" ? (
@@ -78,9 +79,13 @@ export default function ListStudents({ data }) {
 							) : action === "rejection" ? (
 								<RejectionDescription
 									student={selectedStudent}
+									updateStudent={updateStudent}
 								/>
 							) : (
-								<EditStudent student={selectedStudent} />
+								<EditStudent
+									student={selectedStudent}
+									updateStudent={updateStudent}
+								/>
 							)}
 						</Modal>
 					</>
@@ -256,10 +261,20 @@ export default function ListStudents({ data }) {
 																			"",
 																	});
 																}}
-																className='bg-green-200 hover:bg-green-300 text-neutral-800'
+																className={`bg-green-200 text-neutral-800 ${
+																	student.status ===
+																	"Aprobado"
+																		? "opacity-50 cursor-not-allowed pointer-events-none"
+																		: "hover:bg-green-300"
+																}`}
+																disabled={
+																	student.status ===
+																	"Aprobado"
+																}
 															>
 																Aceptar
 															</Button>
+
 															<Button
 																onClick={() => {
 																	setAction(

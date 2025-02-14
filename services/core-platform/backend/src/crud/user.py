@@ -27,6 +27,10 @@ class UserCRUD:
         return db.query(User).filter(User.email == email).first()
     
     @staticmethod
+    def get_user_by_id(db: Session, id: int) -> User:
+        return db.query(User).filter(User.user_id == id).first()
+    
+    @staticmethod
     def get_user_with_institution(db: Session, email: str):
         return (
             db.query(User, EducationalInstitution)
@@ -64,11 +68,23 @@ class UserCRUD:
             .outerjoin(Representative, User.user_id == Representative.user_id)
             .outerjoin(EducationalInstitution, EducationalInstitution.institution_id == Representative.institution_id)
             .outerjoin(Judge, Judge.user_id == User.user_id)
+            .filter(User.is_deleted == False)
             .all()
         )
 
         return [dict(row._mapping) for row in result]
     
+    @staticmethod
+    def exists_replacement (db: Session, user_id: int):
+        result = (
+            db.query(User)
+            .filter(User.role.has(name="Administrador"),
+                    User.user_id != user_id,
+                    User.is_deleted == False)
+            .first()
+        )
+        return result
+
     @staticmethod
     def insert_user(db: Session, user_data: Dict[str, Any]):
         new_user = User(**user_data)

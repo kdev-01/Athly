@@ -58,10 +58,11 @@ export default function ListEvents() {
 							<article
 								key={event.event_id}
 								className={`relative p-8 rounded-md shadow-lg hover:shadow-md transition-shadow ${
-									new Date(event.registration_start_date) >
-									today
-										? "cursor-default"
-										: "cursor-pointer"
+									new Date(event.registration_start_date) <=
+										today &&
+									event.students_count < event.max_players
+										? "cursor-pointer"
+										: "cursor-default"
 								}`}
 								style={{
 									backgroundImage: getImage(event.sport.name),
@@ -71,10 +72,11 @@ export default function ListEvents() {
 									backgroundRepeat: "no-repeat",
 								}}
 								onClick={
-									new Date(event.registration_start_date) >
-									today
-										? undefined
-										: () => handleCardClick(event)
+									new Date(event.registration_start_date) <=
+										today &&
+									event.students_count < event.max_players
+										? () => handleCardClick(event)
+										: undefined
 								}
 							>
 								<span
@@ -124,6 +126,22 @@ export default function ListEvents() {
 											event.registration_end_date,
 										)}
 									</p>
+
+									{event.students_count > 0 && (
+										<p
+											className={`mt-3 text-sm font-medium ${
+												event.students_count >=
+												event.min_players
+													? "text-green-400"
+													: "text-red-400"
+											}`}
+										>
+											{event.students_count >=
+											event.min_players
+												? "Completo"
+												: `Faltan ${event.min_players - event.students_count} jugadores para completar el equipo`}
+										</p>
+									)}
 								</article>
 							</article>
 						))}

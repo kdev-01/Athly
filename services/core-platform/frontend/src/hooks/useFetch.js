@@ -72,6 +72,7 @@ export const useFetch = () => {
 
 	return {
 		data,
+		setData,
 		loading,
 		error,
 		postRequest,

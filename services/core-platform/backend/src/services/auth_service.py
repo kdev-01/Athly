@@ -40,7 +40,7 @@ class AuthService:
                                                                               message="No tiene permisos para acceder al sistema."))
             
             user = UserCRUD.get_user_by_email(db, email)
-            if not user:
+            if not user or user.is_deleted == True:
                 raise HTTPException(status_code=401, detail=standard_response(success=False,
                                                                               message="No tiene permisos para acceder al sistema."))
             

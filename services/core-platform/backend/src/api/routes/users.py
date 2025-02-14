@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from typing_extensions import Annotated
 from src.api.deps import get_db
-from src.schemas.user import UserCredentials, UserEmail, GetUser, AddUser
+from src.schemas.user import UserCredentials, UserEmail, GetUser, AddUser, UserUpdate
 from src.utils.decorators import requires_role
 from src.utils.responses import standard_response
 from src.services.auth_service import AuthService
@@ -195,6 +195,39 @@ async def mass_load_users(
             message="Error interno del servidor.",
             data={"error": str(e)},
         )
+
+@router.post('/delete')
+@requires_role("Administrador")
+def delete_user(
+        user_id: int,
+        db: Session = Depends(get_db),
+        user_credentials: dict = Depends(AuthService.decode_token)
+    ):
+    UserService.delete_data(user_id, db)
+    return standard_response(
+        success=True,
+        message="El usuario se ha eliminado correctamente.",
+    )
+
+@router.post('/put')
+@requires_role("Administrador")
+def update_user(
+        user_id: int,
+        user_data: UserUpdate,
+        db: Session = Depends(get_db),
+        user_credentials: dict = Depends(AuthService.decode_token)
+    ):
+    result = UserService.update_data(user_id,
+                            user_data.first_name,
+                            user_data.last_name,
+                            user_data.phone,
+                            user_data.email,
+                            db)
+    return standard_response(
+        success=True,
+        message="El usuario se ha modificado correctamente.",
+        data=result
+    )
 
 @router.get('/actions')
 def get_role_actions(

@@ -91,7 +91,7 @@ export const addStudent = z.object({
 	enrollment: fileSchema,
 });
 
-export const updateStudent = z.object({
+export const updateStudentS = z.object({
 	identification: identificationSchema,
 	names: namesSchema,
 	surnames: namesSchema,

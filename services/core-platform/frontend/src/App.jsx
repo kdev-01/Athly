@@ -16,7 +16,6 @@ import ManageEnrollments from "./pages/ManageEnrollments";
 import EventsAll from "./pages/Events/EventsAll";
 import EventsEvenues from "./pages/Sports_Venues/SportsVenues";
 import ListEnrolledStudents from "./pages/ListEnrolledStudents";
-import Settings from "./pages/Settings";
 
 export default function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -70,7 +69,6 @@ export default function App() {
 							path='list/students'
 							element={<ListEnrolledStudents />}
 						/>
-						<Route path='settings' element={<Settings />} />
 					</Route>
 				</Route>
 			</Routes>

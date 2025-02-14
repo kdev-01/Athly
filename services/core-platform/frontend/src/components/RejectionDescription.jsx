@@ -6,7 +6,7 @@ import { useFetch } from "../hooks/useFetch";
 import { toast } from "sonner";
 import Button from "./Button";
 
-export default function RejectionDescription({ student }) {
+export default function RejectionDescription({ student, updateStudent }) {
 	const {
 		register,
 		handleSubmit,
@@ -61,6 +61,7 @@ export default function RejectionDescription({ student }) {
 						loading: "Cargando...",
 						success: (data) => {
 							if (data.success) {
+								updateStudent(data.data);
 								return data.message;
 							}
 							throw new Error(data.message);

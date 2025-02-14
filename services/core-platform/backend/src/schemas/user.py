@@ -26,3 +26,10 @@ class AddUser(BaseModel):
     email: EmailStr
     institution_name: Optional[Annotated[str, Field(min_length=3, max_length=100)]] = None
     role_name: Annotated[str, Field(min_length=3, max_length=50)]
+
+class UserUpdate(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone: Optional[str]
+    email: Optional[str]
+    

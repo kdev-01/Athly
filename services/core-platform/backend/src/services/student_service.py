@@ -2,12 +2,14 @@ from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from pathlib import Path
-from datetime import date
+from datetime import date, datetime
 from src.crud.student import StudentCRUD
 from src.crud.representative import RepresentativeCRUD
 from src.crud.gender import GenderCRUD
-from src.crud.event import get_event_by_id
+from src.crud.event import get_event_by_id, get_student_count_by_event
+from src.crud.educational_institution import InstitutionCRUD
 from src.crud.category import get_categories
+from src.utils.rules import MAX_SOCCER_PLAYERS, MAX_BASKETBALL_PLAYERS
 import os
 import base64
 
@@ -56,6 +58,18 @@ class StudentService:
             if not (min_age <= age <= max_age):
                 raise HTTPException(status_code=400, detail=f"La edad no corresponde a la categoría {event.category.name} ({min_age}-{max_age} años)")
         
+        institution_id = InstitutionCRUD.get_institution_id(db, user_credentials.get("email"))
+        number_students = get_student_count_by_event(db, institution_id[0], event_id)
+        MAX_PLAYERS = {
+            "Fútbol": MAX_SOCCER_PLAYERS,
+            "Básquetbol": MAX_BASKETBALL_PLAYERS,
+            "Ajedrez": 1,
+            "Atletismo": 1
+        }
+        if event.sport.name in MAX_PLAYERS and number_students == MAX_PLAYERS[event.sport.name]:
+            raise HTTPException(status_code=400, detail="Ya ha cumplido con el número máximo de participantes.")
+        
+
         representative_id = RepresentativeCRUD.representative_exists(db, user_credentials.get("email"))
         gender_id = GenderCRUD.get_gender_id(db, gender)
 
@@ -182,6 +196,8 @@ class StudentService:
 
         StudentCRUD.update_student(db, student)
 
+        return StudentCRUD.get_update_student(db, student.student_id)
+
     @staticmethod
     def update_registration_student(
         identification: str,
@@ -191,9 +207,7 @@ class StudentService:
         description: Optional[str],
         db: Session
     ):
-        print(identification, student_id, id_event, status, description)
         is_registered = StudentCRUD.is_student_registered_in_event(db, identification, id_event)
-        print(is_registered)
 
         if not is_registered:
             raise HTTPException(
@@ -207,6 +221,8 @@ class StudentService:
             registration.description = description
             
         StudentCRUD.update_registration(db, registration)
+
+        return StudentCRUD.get_update_student(db, student_id)
 
     @staticmethod
     async def update_documents_student(

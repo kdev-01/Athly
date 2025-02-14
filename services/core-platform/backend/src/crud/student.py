@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from src.models.student import Student
 from src.models.registered_student import RegisteredStudent
 from typing import Dict
@@ -49,9 +49,8 @@ class StudentCRUD:
         return student
     
     @staticmethod
-    def get_student_by_id(db: Session, student_id):
-        student = db.query(Student).filter(Student.student_id == student_id).first()
-        return student
+    def get_student_by_id(db: Session, student_id: int):
+        return db.query(Student).filter(Student.student_id == student_id).first()
 
     @staticmethod
     def select_documents_student(db: Session, student_id: int):
@@ -85,4 +84,28 @@ class StudentCRUD:
         db.add(new_registration)
         db.commit()
         db.refresh(new_registration)
+    
+    def get_update_student(db: Session, student_id: int):
+        student = (
+            db.query(Student)
+            .options(joinedload(Student.gender), joinedload(Student.registrations))
+            .filter(Student.student_id == student_id)
+            .first()
+        )
+
+        if not student:
+            return None
         
+        status = student.registrations[0].status if student.registrations else "Sin estado"
+
+        return {
+            "id": student.student_id,
+            "identification": student.identification,
+            "name": student.names,
+            "surname": student.surnames,
+            "date_birth": str(student.date_of_birth),
+            "blood_type": student.blood_type,
+            "photo": student.photo_url,
+            "gender": student.gender_id,
+            "status": status
+        }

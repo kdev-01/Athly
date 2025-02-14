@@ -21,7 +21,7 @@ export default function UsersTable() {
 	} = useForm({
 		resolver: zodResolver(updateUser),
 	});
-	const { data, loading, error, getRequest } = useFetch();
+	const { data, setData, loading, error, getRequest } = useFetch();
 	const [editModal, setEditModal] = useState(false);
 	const [editUser, setEditUser] = useState(null);
 
@@ -61,22 +61,102 @@ export default function UsersTable() {
 			last_name: user.last_name,
 			email: user.email,
 			phone: user.phone,
-			listRoles: user.role,
 		});
 	};
 
 	const saveEdit = (data) => {
-		console.log("Edited data:", {
+		const new_data = {
 			...editUser,
 			...data,
-			role: { ...editUser.role, name: data.role },
-		});
+		};
+
+		toast(
+			`¿Está seguro de editar la información del usuario ${new_data.first_name}?`,
+			{
+				action: {
+					label: "Confirmar",
+					onClick: async () => {
+						const response = await fetch(
+							`http://localhost:8000/user/put?user_id=${new_data.id}`,
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({
+									first_name: new_data.first_name,
+									last_name: new_data.last_name,
+									phone: new_data.phone,
+									email: new_data.email,
+								}),
+								credentials: "include",
+							},
+						);
+
+						const data = await response.json();
+						toast.promise(Promise.resolve(data), {
+							loading: "Cargando...",
+							success: (data) => {
+								if (data.success) {
+									setData((prevUsers) =>
+										prevUsers.map((user) =>
+											user.id === data.data.user_id
+												? { ...user, ...data.data }
+												: user,
+										),
+									);
+
+									return data.message;
+								}
+
+								throw new Error(data.message);
+							},
+							error: (err) => {
+								return err.message;
+							},
+						});
+					},
+				},
+			},
+		);
+
 		setEditModal(false);
 		setEditUser(null);
 	};
 
-	const handleDeleteUser = () => {
-		console.log("hola");
+	const handleDeleteUser = (user) => {
+		toast(`¿Está seguro de eliminar al usuario ${user.first_name}?`, {
+			action: {
+				label: "Confirmar",
+				onClick: async () => {
+					const response = await fetch(
+						`http://localhost:8000/user/delete?user_id=${user.id}`,
+						{
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+							},
+							credentials: "include",
+						},
+					);
+
+					const data = await response.json();
+					toast.promise(Promise.resolve(data), {
+						loading: "Cargando...",
+						success: (data) => {
+							if (data.success) {
+								return data.message;
+							}
+
+							throw new Error(data.message);
+						},
+						error: (err) => {
+							return err.message;
+						},
+					});
+				},
+			},
+		});
 	};
 
 	return (
@@ -169,6 +249,9 @@ export default function UsersTable() {
 
 										<button
 											type='button'
+											onClick={() =>
+												handleDeleteUser(user)
+											}
 											className='bg-neutral-200 text-neutral-800 transition-colors duration-300 ease-in-out hover:bg-neutral-300 rounded-md p-1'
 										>
 											<DeleteIcon />
@@ -223,14 +306,6 @@ export default function UsersTable() {
 							errors={errors}
 						/>
 					</div>
-
-					<ScrollableMenu
-						label='Seleccionar rol'
-						id='listRoles'
-						register={register}
-						endpoint={"/rol/get"}
-						includeAll={true}
-					/>
 
 					<Button type='submit' className='mt-3 w-full'>
 						Guardar

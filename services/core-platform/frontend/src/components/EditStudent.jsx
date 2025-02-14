@@ -1,20 +1,20 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { updateStudent } from "../schemas/student";
+import { updateStudentS } from "../schemas/student";
 import { useFetch } from "../hooks/useFetch";
 import { toast } from "sonner";
 import InputField from "../components/InputField";
 import Button from "../components/Button";
 
-export default function EditStudent({ student }) {
+export default function EditStudent({ student, updateStudent }) {
 	const {
 		register,
 		handleSubmit,
 		reset,
 		formState: { errors },
 	} = useForm({
-		resolver: zodResolver(updateStudent),
+		resolver: zodResolver(updateStudentS),
 		defaultValues: {
 			identification: student?.identification || "",
 			names: student?.name || "",
@@ -59,6 +59,7 @@ export default function EditStudent({ student }) {
 							loading: "Cargando...",
 							success: (data) => {
 								if (data.success) {
+									updateStudent(data.data);
 									return data.message;
 								}
 

@@ -6,6 +6,7 @@ from src.models.event import Event
 from src.models.registered_student import RegisteredStudent
 from src.models.student import Student
 from src.models.representative import Representative
+from src.utils.rules import MAX_SOCCER_PLAYERS, MIN_SOCCER_PLAYERS, MAX_BASKETBALL_PLAYERS, MIN_BASKETBALL_PLAYERS
 
 def create_event(db: Session, event: EventCreate):
     
@@ -182,3 +183,52 @@ def get_events_by_institution(db: Session, institution_id: int):
             })
 
     return result
+
+def get_events_available(db: Session, institution_id: int):
+    events = db.query(Event).options(
+        joinedload(Event.sport),
+        joinedload(Event.category),
+        joinedload(Event.students)
+    ).all()
+
+    result = []
+    for event in events:
+        student_count = sum(
+            1 for reg_student in event.students
+            if reg_student.student.representative and reg_student.student.representative.institution_id == institution_id
+        )
+
+        sport_name = event.sport.name if event.sport else ""
+        if sport_name == "Fútbol":
+            max_players = MAX_SOCCER_PLAYERS
+            min_players = MIN_SOCCER_PLAYERS
+        elif sport_name == "Básquetbol":
+            max_players = MAX_BASKETBALL_PLAYERS
+            min_players = MIN_BASKETBALL_PLAYERS
+        else:
+            max_players = 1
+            min_players = 1
+
+        result.append({
+            "event_id": event.event_id,
+            "name": event.name,
+            "start_date": str(event.start_date),
+            "end_date": str(event.end_date),
+            "registration_start_date": str(event.registration_start_date),
+            "registration_end_date": str(event.registration_end_date),
+            "sport": {"id": event.sport.sport_id, "name": event.sport.name} if event.sport else None,
+            "category": {"id": event.category.category_id, "name": event.category.name} if event.category else None,
+            "students_count": student_count,
+            "max_players": max_players,
+            "min_players": min_players
+        })
+
+    return result
+
+def get_student_count_by_event(db: Session, institution_id: int, event_id: int):
+    student_count = db.query(func.count(RegisteredStudent.student_id)).join(RegisteredStudent.student).join(Student.representative).filter(
+        RegisteredStudent.id_event == event_id,
+        Representative.institution_id == institution_id
+    ).scalar()
+
+    return student_count

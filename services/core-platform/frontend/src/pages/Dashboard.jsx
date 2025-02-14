@@ -8,7 +8,6 @@ import ManageUsersIcon from "../components/Icons/ManageUsersIcon";
 import AddUsersIcon from "../components/Icons/AddUsersIcon";
 import ManageEnrollmentsIcon from "../components/Icons/ManageEnrollmentsIcon";
 import ListStudents from "../components/Icons/ListStudents";
-import SettingsIcon from "../components/Icons/SettingsIcon";
 
 const icons = {
 	HomeIcon: HomeIcon,
@@ -16,12 +15,11 @@ const icons = {
 	AddUsersIcon: AddUsersIcon,
 	ManageEnrollmentsIcon: ManageEnrollmentsIcon,
 	ListStudents: ListStudents,
-	SettingsIcon: SettingsIcon,
 };
 
 export default function Dashboard() {
 	const [actions, setActions] = useState(null);
-	const { data, getRequest } = useFetch();
+	const { getRequest } = useFetch();
 
 	useEffect(() => {
 		const getUserActions = async () => {
@@ -59,7 +57,7 @@ export default function Dashboard() {
 							className='flex items-center gap-2 px-4 py-2 text-sm rounded-lg'
 						>
 							<HomeIcon />
-							Home
+							Inicio
 						</NavLink>
 					</li>
 					{actions?.actions.map((action, index) => {

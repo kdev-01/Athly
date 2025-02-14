@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
 from src.models.educational_institution import EducationalInstitution
+from src.models.representative import Representative
+from src.models.user import User
 
 class InstitutionCRUD:
     @staticmethod
@@ -16,3 +18,12 @@ class InstitutionCRUD:
         )
 
         return [dict(row._mapping) for row in result]
+    
+    @staticmethod
+    def get_institution_id(db: Session, email: str):
+        return db.query(EducationalInstitution.institution_id).\
+            join(Representative).\
+            join(User).\
+            filter(User.email == email).\
+            first()
+    
